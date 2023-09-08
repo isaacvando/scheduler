@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (..)
+import Html.Attributes exposing (..)
 
 
 main =
@@ -26,15 +27,18 @@ init _ =
     ( {}, Cmd.none )
 
 
-view : Model -> Browser.Document Msg
-view model =
-    { title = "Schedule Maker"
-    , body = [ h1 [] [ text "Schedule Maker" ] ]
-    }
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
             ( model, Cmd.none )
+
+
+view : Model -> Browser.Document Msg
+view model =
+    { title = "Schedule Maker"
+    , body =
+        [ div [ class "container" ]
+            [ h1 [] [ text "Schedule Maker" ] ]
+        ]
+    }
