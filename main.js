@@ -5163,15 +5163,102 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{},
+		{
+			csv: '',
+			schedule: $elm$core$Maybe$Just(_List_Nil)
+		},
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Main$Event = F3(
+	function (a, b, c) {
+		return {$: 'Event', a: a, b: b, c: c};
+	});
+var $author$project$Main$toTime = function (time) {
+	return $elm$core$Maybe$Nothing;
+};
+var $author$project$Main$toEvent = function (row) {
+	var _v0 = A2($elm$core$String$split, ',', row);
+	if (((_v0.b && _v0.b.b) && _v0.b.b.b) && (!_v0.b.b.b.b)) {
+		var name = _v0.a;
+		var _v1 = _v0.b;
+		var start = _v1.a;
+		var _v2 = _v1.b;
+		var end = _v2.a;
+		var _v3 = _Utils_Tuple2(
+			$author$project$Main$toTime(start),
+			$author$project$Main$toTime(end));
+		if ((_v3.a.$ === 'Just') && (_v3.b.$ === 'Just')) {
+			var s = _v3.a.a;
+			var e = _v3.b.a;
+			return $elm$core$Maybe$Just(
+				A3($author$project$Main$Event, name, s, e));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Main$generateHelper = F2(
+	function (rows, events) {
+		if (!rows.b) {
+			return $elm$core$Maybe$Just(events);
+		} else {
+			var row = rows.a;
+			var rest = rows.b;
+			return A2(
+				$elm$core$Maybe$andThen,
+				function (event) {
+					return A2(
+						$author$project$Main$generateHelper,
+						rest,
+						A2($elm$core$List$cons, event, events));
+				},
+				$author$project$Main$toEvent(row));
+		}
+	});
+var $author$project$Main$generate = function (rows) {
+	return A2($author$project$Main$generateHelper, rows, _List_Nil);
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		switch (msg.$) {
+			case 'NoOp':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'Csv':
+				var csv = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{csv: csv}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							schedule: $author$project$Main$generate(
+								A2($elm$core$String$split, '\n', model.csv))
+						}),
+					$elm$core$Platform$Cmd$none);
+		}
 	});
+var $author$project$Main$Csv = function (a) {
+	return {$: 'Csv', a: a};
+};
+var $author$project$Main$GenerateSchedule = {$: 'GenerateSchedule'};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5181,10 +5268,85 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$Attributes$cols = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'cols',
+		$elm$core$String$fromInt(n));
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$rows = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'rows',
+		$elm$core$String$fromInt(n));
+};
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$textarea = _VirtualDom_node('textarea');
+var $author$project$Main$viewSchedule = function (events) {
+	if (events.$ === 'Nothing') {
+		return $elm$html$Html$text('There was an error generating the schedule. Please confirm your input is formatted properly.');
+	} else {
+		var es = events.a;
+		return $elm$html$Html$text('your schedule');
+	}
+};
 var $author$project$Main$view = function (model) {
 	return {
 		body: _List_fromArray(
@@ -5203,6 +5365,44 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('Schedule Maker')
+							])),
+						$author$project$Main$viewSchedule(model.schedule),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('form-row')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$label,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Event Schedule')
+									])),
+								A2(
+								$elm$html$Html$textarea,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$rows(15),
+										$elm$html$Html$Attributes$cols(70),
+										A2($elm$html$Html$Attributes$style, 'display', 'block'),
+										$elm$html$Html$Attributes$placeholder('How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM'),
+										$elm$html$Html$Events$onInput($author$project$Main$Csv)
+									]),
+								_List_Nil)
+							])),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$GenerateSchedule)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Generate Schedule')
 							]))
 					]))
 			]),
