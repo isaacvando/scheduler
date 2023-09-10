@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List
+import Parser exposing ((|.), (|=))
 
 
 main =
@@ -18,7 +19,7 @@ main =
 
 type alias Model =
     { csv : String
-    , schedule : Maybe (List Event)
+    , schedule : Result String (List Event)
     }
 
 
@@ -38,7 +39,7 @@ type Time
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { csv = "", schedule = Just [] }, Cmd.none )
+    ( { csv = "", schedule = Ok [] }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -54,39 +55,59 @@ update msg model =
             ( { model | schedule = generate (String.split "\n" model.csv) }, Cmd.none )
 
 
-generate : List String -> Maybe (List Event)
+generate : List String -> Result String (List Event)
 generate rows =
     generateHelper rows []
 
 
-generateHelper : List String -> List Event -> Maybe (List Event)
+generateHelper : List String -> List Event -> Result String (List Event)
 generateHelper rows events =
     case rows of
         [] ->
-            Just events
+            Ok events
 
         row :: rest ->
-            toEvent row |> Maybe.andThen (\event -> generateHelper rest (event :: events))
+            toEvent row |> Result.andThen (\event -> generateHelper rest (event :: events))
 
 
-toEvent : String -> Maybe Event
+toEvent : String -> Result String Event
 toEvent row =
     case String.split "," row of
         [ name, start, end ] ->
             case ( toTime start, toTime end ) of
-                ( Just s, Just e ) ->
-                    Just (Event name s e)
+                ( Ok s, Ok e ) ->
+                    Ok (Event name s e)
 
                 _ ->
-                    Nothing
+                    Err "I wasn't able to convert the values to times"
 
         _ ->
-            Nothing
+            Err <| "I was expecting three comma separated values but got " ++ row ++ " instead"
 
 
-toTime : String -> Maybe Time
+toTime : String -> Result (List Parser.DeadEnd) Time
 toTime time =
-    Nothing
+    String.replace " " "" time
+        |> String.toUpper
+        |> Parser.run timeParser
+
+
+timeParser : Parser.Parser Time
+timeParser =
+    Parser.succeed Time
+        |= timeNumeralParser
+        |. Parser.symbol ":"
+        |= timeNumeralParser
+        |. Parser.oneOf [ Parser.keyword "AM", Parser.keyword "PM" ]
+
+
+timeNumeralParser : Parser.Parser Int
+timeNumeralParser =
+    Parser.oneOf
+        [ Parser.int
+        , Parser.token "0"
+            |> Parser.andThen (\_ -> Parser.int)
+        ]
 
 
 view : Model -> Browser.Document Msg
@@ -113,11 +134,21 @@ view model =
     }
 
 
-viewSchedule : Maybe (List Event) -> Html Msg
+viewSchedule : Result String (List Event) -> Html Msg
 viewSchedule events =
     case events of
-        Nothing ->
-            text "There was an error generating the schedule. Please confirm your input is formatted properly."
+        Err error ->
+            text <| "There was an error generating the schedule: " ++ error
 
-        Just es ->
-            text "your schedule"
+        Ok es ->
+            div [] (List.map viewEvent es)
+
+
+viewEvent : Event -> Html Msg
+viewEvent (Event name start end) =
+    div [] [ text name, viewTime start, viewTime end ]
+
+
+viewTime : Time -> Html Msg
+viewTime (Time hour minute) =
+    text <| String.fromInt hour ++ String.fromInt minute
