@@ -5294,7 +5294,7 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
-			csv: '',
+			csv: 'How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM',
 			schedule: $elm$core$Result$Ok(_List_Nil)
 		},
 		$elm$core$Platform$Cmd$none);
@@ -5314,6 +5314,17 @@ var $elm$core$Result$andThen = F2(
 var $author$project$Main$Event = F3(
 	function (a, b, c) {
 		return {$: 'Event', a: a, b: b, c: c};
+	});
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
 	});
 var $elm$core$String$replace = F3(
 	function (before, after, string) {
@@ -5381,14 +5392,12 @@ var $elm$parser$Parser$run = F2(
 				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
 		}
 	});
-var $author$project$Main$Time = F2(
-	function (a, b) {
-		return {$: 'Time', a: a, b: b};
+var $author$project$Main$Time = F3(
+	function (a, b, c) {
+		return {$: 'Time', a: a, b: b, c: c};
 	});
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
+var $author$project$Main$AM = {$: 'AM'};
+var $author$project$Main$PM = {$: 'PM'};
 var $elm$parser$Parser$Advanced$Bad = F2(
 	function (a, b) {
 		return {$: 'Bad', a: a, b: b};
@@ -5400,113 +5409,30 @@ var $elm$parser$Parser$Advanced$Good = F3(
 var $elm$parser$Parser$Advanced$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
-var $elm$parser$Parser$Advanced$map2 = F3(
-	function (func, _v0, _v1) {
-		var parseA = _v0.a;
-		var parseB = _v1.a;
+var $elm$parser$Parser$Advanced$map = F2(
+	function (func, _v0) {
+		var parse = _v0.a;
 		return $elm$parser$Parser$Advanced$Parser(
 			function (s0) {
-				var _v2 = parseA(s0);
-				if (_v2.$ === 'Bad') {
-					var p = _v2.a;
-					var x = _v2.b;
-					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Good') {
+					var p = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p,
+						func(a),
+						s1);
 				} else {
-					var p1 = _v2.a;
-					var a = _v2.b;
-					var s1 = _v2.c;
-					var _v3 = parseB(s1);
-					if (_v3.$ === 'Bad') {
-						var p2 = _v3.a;
-						var x = _v3.b;
-						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
-					} else {
-						var p2 = _v3.a;
-						var b = _v3.b;
-						var s2 = _v3.c;
-						return A3(
-							$elm$parser$Parser$Advanced$Good,
-							p1 || p2,
-							A2(func, a, b),
-							s2);
-					}
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
 				}
 			});
 	});
-var $elm$parser$Parser$Advanced$ignorer = F2(
-	function (keepParser, ignoreParser) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
-	});
-var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
-var $elm$parser$Parser$Advanced$keeper = F2(
-	function (parseFunc, parseArg) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
-	});
-var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
-var $elm$parser$Parser$ExpectingKeyword = function (a) {
-	return {$: 'ExpectingKeyword', a: a};
-};
-var $elm$parser$Parser$Advanced$Token = F2(
-	function (a, b) {
-		return {$: 'Token', a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$AddRight = F2(
-	function (a, b) {
-		return {$: 'AddRight', a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$DeadEnd = F4(
-	function (row, col, problem, contextStack) {
-		return {col: col, contextStack: contextStack, problem: problem, row: row};
-	});
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
 var $elm$parser$Parser$Advanced$Empty = {$: 'Empty'};
-var $elm$parser$Parser$Advanced$fromState = F2(
-	function (s, x) {
-		return A2(
-			$elm$parser$Parser$Advanced$AddRight,
-			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.row, s.col, x, s.context));
-	});
-var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
-var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$Basics$not = _Basics_not;
-var $elm$parser$Parser$Advanced$keyword = function (_v0) {
-	var kwd = _v0.a;
-	var expecting = _v0.b;
-	var progress = !$elm$core$String$isEmpty(kwd);
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.offset, s.row, s.col, s.src);
-			var newOffset = _v1.a;
-			var newRow = _v1.b;
-			var newCol = _v1.c;
-			return (_Utils_eq(newOffset, -1) || (0 <= A3(
-				$elm$parser$Parser$Advanced$isSubChar,
-				function (c) {
-					return $elm$core$Char$isAlphaNum(c) || _Utils_eq(
-						c,
-						_Utils_chr('_'));
-				},
-				newOffset,
-				s.src))) ? A2(
-				$elm$parser$Parser$Advanced$Bad,
-				false,
-				A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
-				$elm$parser$Parser$Advanced$Good,
-				progress,
-				_Utils_Tuple0,
-				{col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src});
-		});
-};
-var $elm$parser$Parser$keyword = function (kwd) {
-	return $elm$parser$Parser$Advanced$keyword(
-		A2(
-			$elm$parser$Parser$Advanced$Token,
-			kwd,
-			$elm$parser$Parser$ExpectingKeyword(kwd)));
-};
 var $elm$parser$Parser$Advanced$Append = F2(
 	function (a, b) {
 		return {$: 'Append', a: a, b: b};
@@ -5550,16 +5476,33 @@ var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
 		});
 };
 var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
-var $elm$parser$Parser$Advanced$succeed = function (a) {
-	return $elm$parser$Parser$Advanced$Parser(
-		function (s) {
-			return A3($elm$parser$Parser$Advanced$Good, false, a, s);
-		});
-};
-var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
 var $elm$parser$Parser$ExpectingSymbol = function (a) {
 	return {$: 'ExpectingSymbol', a: a};
 };
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 'Token', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$AddRight = F2(
+	function (a, b) {
+		return {$: 'AddRight', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$DeadEnd = F4(
+	function (row, col, problem, contextStack) {
+		return {col: col, contextStack: contextStack, problem: problem, row: row};
+	});
+var $elm$parser$Parser$Advanced$fromState = F2(
+	function (s, x) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.row, s.col, x, s.context));
+	});
+var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$Basics$not = _Basics_not;
 var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var str = _v0.a;
 	var expecting = _v0.b;
@@ -5588,6 +5531,76 @@ var $elm$parser$Parser$symbol = function (str) {
 			str,
 			$elm$parser$Parser$ExpectingSymbol(str)));
 };
+var $author$project$Main$amPmParser = $elm$parser$Parser$oneOf(
+	_List_fromArray(
+		[
+			A2(
+			$elm$parser$Parser$map,
+			function (_v0) {
+				return $author$project$Main$AM;
+			},
+			$elm$parser$Parser$symbol('AM')),
+			A2(
+			$elm$parser$Parser$map,
+			function (_v1) {
+				return $author$project$Main$PM;
+			},
+			$elm$parser$Parser$symbol('PM'))
+		]));
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $elm$parser$Parser$Advanced$map2 = F3(
+	function (func, _v0, _v1) {
+		var parseA = _v0.a;
+		var parseB = _v1.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v2 = parseA(s0);
+				if (_v2.$ === 'Bad') {
+					var p = _v2.a;
+					var x = _v2.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p1 = _v2.a;
+					var a = _v2.b;
+					var s1 = _v2.c;
+					var _v3 = parseB(s1);
+					if (_v3.$ === 'Bad') {
+						var p2 = _v3.a;
+						var x = _v3.b;
+						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+					} else {
+						var p2 = _v3.a;
+						var b = _v3.b;
+						var s2 = _v3.c;
+						return A3(
+							$elm$parser$Parser$Advanced$Good,
+							p1 || p2,
+							A2(func, a, b),
+							s2);
+					}
+				}
+			});
+	});
+var $elm$parser$Parser$Advanced$ignorer = F2(
+	function (keepParser, ignoreParser) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
+	});
+var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
+	});
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$Advanced$succeed = function (a) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A3($elm$parser$Parser$Advanced$Good, false, a, s);
+		});
+};
+var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
 var $elm$parser$Parser$Advanced$andThen = F2(
 	function (callback, _v0) {
 		var parseA = _v0.a;
@@ -5797,32 +5810,27 @@ var $elm$parser$Parser$token = function (str) {
 var $author$project$Main$timeNumeralParser = $elm$parser$Parser$oneOf(
 	_List_fromArray(
 		[
-			$elm$parser$Parser$int,
 			A2(
 			$elm$parser$Parser$andThen,
 			function (_v0) {
 				return $elm$parser$Parser$int;
 			},
-			$elm$parser$Parser$token('0'))
+			$elm$parser$Parser$token('0')),
+			$elm$parser$Parser$int
 		]));
 var $author$project$Main$timeParser = A2(
 	$elm$parser$Parser$keeper,
 	A2(
 		$elm$parser$Parser$keeper,
-		$elm$parser$Parser$succeed($author$project$Main$Time),
 		A2(
-			$elm$parser$Parser$ignorer,
-			$author$project$Main$timeNumeralParser,
-			$elm$parser$Parser$symbol(':'))),
-	A2(
-		$elm$parser$Parser$ignorer,
-		$author$project$Main$timeNumeralParser,
-		$elm$parser$Parser$oneOf(
-			_List_fromArray(
-				[
-					$elm$parser$Parser$keyword('AM'),
-					$elm$parser$Parser$keyword('PM')
-				]))));
+			$elm$parser$Parser$keeper,
+			$elm$parser$Parser$succeed($author$project$Main$Time),
+			A2(
+				$elm$parser$Parser$ignorer,
+				$author$project$Main$timeNumeralParser,
+				$elm$parser$Parser$symbol(':'))),
+		$author$project$Main$timeNumeralParser),
+	$author$project$Main$amPmParser);
 var $elm$core$String$toUpper = _String_toUpper;
 var $author$project$Main$toTime = function (time) {
 	return A2(
@@ -5839,17 +5847,23 @@ var $author$project$Main$toEvent = function (row) {
 		var start = _v1.a;
 		var _v2 = _v1.b;
 		var end = _v2.a;
-		var _v3 = _Utils_Tuple2(
-			$author$project$Main$toTime(start),
-			$author$project$Main$toTime(end));
-		if ((_v3.a.$ === 'Ok') && (_v3.b.$ === 'Ok')) {
-			var s = _v3.a.a;
-			var e = _v3.b.a;
-			return $elm$core$Result$Ok(
-				A3($author$project$Main$Event, name, s, e));
-		} else {
-			return $elm$core$Result$Err('I wasn\'t able to convert the values to times');
-		}
+		return A2(
+			$elm$core$Result$mapError,
+			function (_v3) {
+				return 'I was trying to parse a time value for ' + (name + ' but I got stuck.');
+			},
+			A2(
+				$elm$core$Result$andThen,
+				function (s) {
+					return A2(
+						$elm$core$Result$andThen,
+						function (e) {
+							return $elm$core$Result$Ok(
+								A3($author$project$Main$Event, name, s, e));
+						},
+						$author$project$Main$toTime(end));
+				},
+				$author$project$Main$toTime(start)));
 	} else {
 		return $elm$core$Result$Err('I was expecting three comma separated values but got ' + (row + ' instead'));
 	}
@@ -5983,13 +5997,25 @@ var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $author$project$Main$fromString = function (amPm) {
+	if (amPm.$ === 'AM') {
+		return 'AM';
+	} else {
+		return 'PM';
+	}
+};
 var $author$project$Main$viewTime = function (_v0) {
 	var hour = _v0.a;
 	var minute = _v0.b;
+	var amPm = _v0.c;
 	return $elm$html$Html$text(
 		_Utils_ap(
 			$elm$core$String$fromInt(hour),
-			$elm$core$String$fromInt(minute)));
+			_Utils_ap(
+				$elm$core$String$fromInt(minute),
+				$author$project$Main$fromString(amPm))));
 };
 var $author$project$Main$viewEvent = function (_v0) {
 	var name = _v0.a;
@@ -5997,12 +6023,41 @@ var $author$project$Main$viewEvent = function (_v0) {
 	var end = _v0.c;
 	return A2(
 		$elm$html$Html$div,
-		_List_Nil,
 		_List_fromArray(
 			[
-				$elm$html$Html$text(name),
-				$author$project$Main$viewTime(start),
-				$author$project$Main$viewTime(end)
+				A2($elm$html$Html$Attributes$style, 'width', '120'),
+				A2($elm$html$Html$Attributes$style, 'height', '120'),
+				A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
+				A2($elm$html$Html$Attributes$style, 'display', 'inline-block'),
+				A2($elm$html$Html$Attributes$style, 'margin', '10'),
+				A2($elm$html$Html$Attributes$style, 'padding', '5'),
+				A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
+				A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
+				A2($elm$html$Html$Attributes$style, 'font-size', '12px')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(name)
+					])),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Main$viewTime(start)
+					])),
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Main$viewTime(end)
+					]))
 			]));
 };
 var $author$project$Main$viewSchedule = function (events) {
@@ -6025,7 +6080,8 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('container')
+						$elm$html$Html$Attributes$class('container'),
+						A2($elm$html$Html$Attributes$style, 'font-face', 'sans-serif')
 					]),
 				_List_fromArray(
 					[
@@ -6060,7 +6116,8 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$Attributes$cols(70),
 										A2($elm$html$Html$Attributes$style, 'display', 'block'),
 										$elm$html$Html$Attributes$placeholder('How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM'),
-										$elm$html$Html$Events$onInput($author$project$Main$Csv)
+										$elm$html$Html$Events$onInput($author$project$Main$Csv),
+										$elm$html$Html$Attributes$value(model.csv)
 									]),
 								_List_Nil)
 							])),
