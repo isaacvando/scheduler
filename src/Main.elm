@@ -1,6 +1,8 @@
 module Main exposing (..)
 
 import Browser
+import Dict
+import Dict.Extra as Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -30,7 +32,7 @@ type Msg
 
 
 type Event
-    = Event String Time Time
+    = Event String Time Time String
 
 
 type Time
@@ -44,7 +46,7 @@ type AmPm
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { csv = "How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM", schedule = Ok [] }, Cmd.none )
+    ( { csv = "How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B", schedule = Ok [] }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -57,41 +59,43 @@ update msg model =
             ( { model | csv = csv }, Cmd.none )
 
         GenerateSchedule ->
-            ( { model | schedule = generate (String.split "\n" model.csv) }, Cmd.none )
+            ( { model | schedule = generate model.csv }, Cmd.none )
 
 
-generate : List String -> Result String (List Event)
-generate rows =
-    generateHelper rows []
+generate : String -> Result String (List Event)
+generate input =
+    String.lines input
+        |> generateHelper []
 
 
-generateHelper : List String -> List Event -> Result String (List Event)
-generateHelper rows events =
+generateHelper : List Event -> List String -> Result String (List Event)
+generateHelper events rows =
     case rows of
         [] ->
             Ok events
 
         row :: rest ->
-            toEvent row |> Result.andThen (\event -> generateHelper rest (event :: events))
+            toEvent row |> Result.andThen (\event -> generateHelper (event :: events) rest)
 
 
 toEvent : String -> Result String Event
 toEvent row =
     case String.split "," row of
-        [ name, start, end ] ->
+        [ name, start, end, venue ] ->
             toTime start
-                |> Result.andThen (\s -> toTime end |> Result.andThen (\e -> Ok (Event name s e)))
-                |> Result.mapError (\_ -> "I was trying to parse a time value for " ++ name ++ " but I got stuck.")
+                |> Result.andThen (\s -> toTime end |> Result.andThen (\e -> Ok (Event name s e venue)))
 
         _ ->
-            Err <| "I was expecting three comma separated values but got " ++ row ++ " instead"
+            Err <| "I was expecting four comma separated values but got " ++ row ++ " instead"
 
 
-toTime : String -> Result (List Parser.DeadEnd) Time
+toTime : String -> Result String Time
 toTime time =
-    String.replace " " "" time
+    time
+        |> String.replace " " ""
         |> String.toUpper
         |> Parser.run timeParser
+        |> Result.mapError (\_ -> "I was trying to parse a time value for the input'" ++ time ++ "' but I got stuck.")
 
 
 timeParser : Parser.Parser Time
@@ -124,6 +128,8 @@ view model =
         [ div
             [ class "container"
             , style "font-face" "sans-serif"
+            , style "width" "70%"
+            , style "margin" "auto"
             ]
             [ h1 [] [ text "Schedule Maker" ]
             , viewSchedule model.schedule
@@ -152,31 +158,76 @@ viewSchedule events =
             text <| "There was an error generating the schedule: " ++ error
 
         Ok es ->
-            div [] (List.map viewEvent es)
+            let
+                grouped =
+                    groupByVenue es
+            in
+            table
+                [ style "height" "480"
+                , style "border" "1px solid black"
+                , style "border-radius" "10"
+                ]
+                [ thead [] (grouped |> List.map (\( venue, _ ) -> th [] [ text venue ]))
+                , tr [] (grouped |> List.map (\( _, xs ) -> td [] [ div [] (List.map viewEvent xs) ]))
+                ]
+
+
+
+-- (groupByVenue es |> List.map viewVenue)
+
+
+groupByVenue : List Event -> List ( String, List Event )
+groupByVenue events =
+    events
+        |> Dict.groupBy (\(Event _ _ _ venue) -> venue)
+        |> Dict.toList
+
+
+viewVenue : ( String, List Event ) -> Html Msg
+viewVenue ( venue, events ) =
+    div
+        [ style "width" "100%"
+        , style "margin" "10"
+        ]
+        [ th [] [ text venue ]
+        , div
+            [ style "width" "100%"
+            , style "margin" "10"
+            ]
+            (events |> List.map viewEvent)
+        ]
 
 
 viewEvent : Event -> Html Msg
-viewEvent (Event name start end) =
+viewEvent (Event name start end venue) =
     div
         [ style "width" "120"
-        , style "height" "120"
+        , style "height" "100"
         , style "background-color" "#ADD8E6"
         , style "display" "inline-block"
         , style "margin" "10"
-        , style "padding" "5"
+        , style "padding" "2"
         , style "border" "1px solid black"
         , style "border-radius" "5px"
         , style "font-size" "12px"
         ]
         [ p [] [ text name ]
-        , p [] [ viewTime start ]
-        , p [] [ viewTime end ]
+        , p [] [ text <| viewTime start ++ " - " ++ viewTime end ]
         ]
 
 
-viewTime : Time -> Html Msg
+viewTime : Time -> String
 viewTime (Time hour minute amPm) =
-    text <| String.fromInt hour ++ String.fromInt minute ++ fromString amPm
+    String.fromInt hour ++ ":" ++ viewTimeNumeral minute ++ " " ++ fromString amPm
+
+
+viewTimeNumeral : Int -> String
+viewTimeNumeral n =
+    if n < 10 then
+        "0" ++ String.fromInt n
+
+    else
+        String.fromInt n
 
 
 fromString : AmPm -> String
