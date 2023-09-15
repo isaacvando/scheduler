@@ -6576,6 +6576,7 @@ var $author$project$Main$groupByVenue = function (events) {
 			},
 			events));
 };
+var $author$project$Main$height = 480;
 var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$html$Html$th = _VirtualDom_node('th');
@@ -6608,14 +6609,16 @@ var $author$project$Main$viewEvent = function (_v0) {
 		_List_fromArray(
 			[
 				A2($elm$html$Html$Attributes$style, 'width', '120'),
-				A2($elm$html$Html$Attributes$style, 'height', '100'),
 				A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
 				A2($elm$html$Html$Attributes$style, 'display', 'inline-block'),
 				A2($elm$html$Html$Attributes$style, 'margin', '10'),
 				A2($elm$html$Html$Attributes$style, 'padding', '2'),
 				A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
 				A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
-				A2($elm$html$Html$Attributes$style, 'font-size', '12px')
+				A2($elm$html$Html$Attributes$style, 'font-size', '12px'),
+				A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+				A2($elm$html$Html$Attributes$style, 'top', '0'),
+				A2($elm$html$Html$Attributes$style, 'bottom', '100px')
 			]),
 		_List_fromArray(
 			[
@@ -6647,7 +6650,10 @@ var $author$project$Main$viewSchedule = function (events) {
 			$elm$html$Html$table,
 			_List_fromArray(
 				[
-					A2($elm$html$Html$Attributes$style, 'height', '480'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'height',
+					$elm$core$String$fromInt($author$project$Main$height)),
 					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
 					A2($elm$html$Html$Attributes$style, 'border-radius', '10')
 				]),
@@ -6678,7 +6684,10 @@ var $author$project$Main$viewSchedule = function (events) {
 							var xs = _v2.b;
 							return A2(
 								$elm$html$Html$td,
-								_List_Nil,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'position', 'relative')
+									]),
 								_List_fromArray(
 									[
 										A2(
@@ -6699,7 +6708,6 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('container'),
 						A2($elm$html$Html$Attributes$style, 'font-face', 'sans-serif'),
 						A2($elm$html$Html$Attributes$style, 'width', '70%'),
 						A2($elm$html$Html$Attributes$style, 'margin', 'auto')

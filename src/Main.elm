@@ -126,8 +126,7 @@ view model =
     { title = "Schedule Maker"
     , body =
         [ div
-            [ class "container"
-            , style "font-face" "sans-serif"
+            [ style "font-face" "sans-serif"
             , style "width" "70%"
             , style "margin" "auto"
             ]
@@ -163,17 +162,50 @@ viewSchedule events =
                     groupByVenue es
             in
             table
-                [ style "height" "480"
+                [ style "height" <| String.fromInt height
                 , style "border" "1px solid black"
                 , style "border-radius" "10"
                 ]
-                [ thead [] (grouped |> List.map (\( venue, _ ) -> th [] [ text venue ]))
-                , tr [] (grouped |> List.map (\( _, xs ) -> td [] [ div [] (List.map viewEvent xs) ]))
+                [ thead []
+                    (grouped
+                        |> List.map
+                            (\( venue, _ ) ->
+                                th [] [ text venue ]
+                            )
+                    )
+                , tr []
+                    (grouped
+                        |> List.map
+                            (\( _, xs ) ->
+                                td
+                                    [ style "position" "relative"
+                                    ]
+                                    [ div [] (List.map viewEvent xs) ]
+                            )
+                    )
                 ]
 
 
+viewRow : List ( String, List Event ) -> Html Msg
+viewRow grouped =
+    let
+        maxDiff =
+            100
+    in
+    tr []
+        (grouped
+            |> List.map
+                (\( _, xs ) ->
+                    td
+                        [ style "position" "relative" ]
+                        [ div [] (List.map viewEvent xs) ]
+                )
+        )
 
--- (groupByVenue es |> List.map viewVenue)
+
+height : Int
+height =
+    480
 
 
 groupByVenue : List Event -> List ( String, List Event )
@@ -183,26 +215,10 @@ groupByVenue events =
         |> Dict.toList
 
 
-viewVenue : ( String, List Event ) -> Html Msg
-viewVenue ( venue, events ) =
-    div
-        [ style "width" "100%"
-        , style "margin" "10"
-        ]
-        [ th [] [ text venue ]
-        , div
-            [ style "width" "100%"
-            , style "margin" "10"
-            ]
-            (events |> List.map viewEvent)
-        ]
-
-
 viewEvent : Event -> Html Msg
 viewEvent (Event name start end venue) =
     div
         [ style "width" "120"
-        , style "height" "100"
         , style "background-color" "#ADD8E6"
         , style "display" "inline-block"
         , style "margin" "10"
@@ -210,10 +226,31 @@ viewEvent (Event name start end venue) =
         , style "border" "1px solid black"
         , style "border-radius" "5px"
         , style "font-size" "12px"
+        , style "position" "absolute"
+        , style "top" "0"
+        , style "bottom" "100px"
         ]
         [ p [] [ text name ]
         , p [] [ text <| viewTime start ++ " - " ++ viewTime end ]
         ]
+
+
+diff : Time -> Time -> Int
+diff t1 t2 =
+    abs <| toMinutes t1 - toMinutes t2
+
+
+toMinutes : Time -> Int
+toMinutes (Time hour minute amPm) =
+    60
+        * hour
+        + minute
+        + (if amPm == PM then
+            12 * 60
+
+           else
+            0
+          )
 
 
 viewTime : Time -> String
