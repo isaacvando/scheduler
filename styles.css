@@ -12,3 +12,7 @@
 .column:first-child::before {
   display: none;
 }
+
+.event:hover {
+  background-color: green !important;
+}

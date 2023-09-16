@@ -10,6 +10,7 @@ import List
 import Parser exposing ((|.), (|=), int)
 
 
+main : Program () Model Msg
 main =
     Browser.document
         { init = init
@@ -31,8 +32,14 @@ type Msg
     | Csv String
 
 
-type Event
-    = Event String Time Time String
+type alias Event =
+    { title : String
+    , name : String
+    , start : Time
+    , end : Time
+    , venue : String
+    , link : String
+    }
 
 
 type Time
@@ -48,11 +55,10 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { csv =
             String.join "\n"
-                [ "How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A"
-                , "The Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B"
-                , "I love waking up early,11:00AM,1:25PM,Room C"
-                , "Another one,12:00AM,1:25PM,Room B"
-                , "Yet Another,11:05AM,1:00PM,Room A"
+                [ "How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com"
+                , "The Effects of Excessive Tomato Consumption,jeff bob,3:00PM,3:45PM,Room B,https://example.com"
+                , "I love waking up early,jeff bob,11:00AM,1:25PM,Room C,https://example.com"
+                , "Another one,jeff bob,12:00AM,1:25PM,Room B,https://example.com"
                 ]
       , schedule = Ok []
       }
@@ -92,12 +98,27 @@ generateHelper events rows =
 toEvent : String -> Result String Event
 toEvent row =
     case String.split "," row of
-        [ name, start, end, venue ] ->
+        [ title, name, start, end, venue, link ] ->
             toTime start
-                |> Result.andThen (\s -> toTime end |> Result.andThen (\e -> Ok (Event name s e venue)))
+                |> Result.andThen
+                    (\s ->
+                        toTime end
+                            |> Result.andThen
+                                (\e ->
+                                    Ok
+                                        { title =
+                                            title
+                                        , name = name
+                                        , start = s
+                                        , end = e
+                                        , venue = venue
+                                        , link = link
+                                        }
+                                )
+                    )
 
         _ ->
-            Err <| "I was expecting four comma separated values but got " ++ row ++ " instead"
+            Err <| "I was expecting 6 comma separated values but got '" ++ row ++ "' instead"
 
 
 toTime : String -> Result String Time
@@ -178,43 +199,41 @@ viewSchedule events =
             let
                 startTime =
                     es
-                        |> List.map (\(Event _ start _ _) -> toMinutes start)
+                        |> List.map (\e -> toMinutes e.start)
                         |> List.minimum
                         |> Maybe.withDefault 0
+
+                grouped =
+                    es
+                        |> Dict.groupBy .venue
+                        |> Dict.toList
             in
             div
                 [ style "border" "1px solid black"
                 , style "border-radius" "10"
                 , class "schedule"
                 , style "display" "grid"
-                , style "grid-template-columns" (List.map (const width) (groupByVenue es) |> String.join " ")
+                , style "grid-template-columns" (List.map (const width) grouped |> String.join " ")
                 , style "gap" "14px"
                 , style "padding" "7px"
                 , style "position" "relative"
                 ]
-                (List.map (viewColumn startTime (getTotalTime es)) (groupByVenue es))
+                (List.map (viewColumn startTime (getTotalTime es)) grouped)
 
 
 getTotalTime : List Event -> Int
 getTotalTime events =
     (events
-        |> List.map (\(Event _ _ end _) -> toMinutes end)
+        |> List.map (\e -> toMinutes e.end)
         |> List.maximum
         |> Maybe.withDefault 0
     )
         - (events
-            |> List.map (\(Event _ start _ _) -> toMinutes start)
+            |> List.map (\e -> toMinutes e.start)
             |> List.minimum
             |> Maybe.withDefault 0
           )
         |> scale
-
-
-groupByVenue : List Event -> List ( String, List Event )
-groupByVenue events =
-    events
-        |> Dict.groupBy (\(Event _ _ _ venue) -> venue)
-        |> Dict.toList
 
 
 viewColumn : Int -> Int -> ( String, List Event ) -> Html Msg
@@ -243,9 +262,10 @@ viewEvents startTime totalTime events =
 
 
 viewEvent : Int -> Event -> Html Msg
-viewEvent startTime (Event name start end _) =
-    div
-        [ style "width" width
+viewEvent startTime event =
+    a
+        [ class "event"
+        , style "width" width
         , style "box-sizing" "border-box"
         , style "background-color" "#ADD8E6"
         , style "padding" "5px"
@@ -255,12 +275,19 @@ viewEvent startTime (Event name start end _) =
         , style "position" "absolute"
         , style "display" "grid"
         , style "place-items" "center"
-        , toMinutes start - startTime |> scale |> String.fromInt |> style "top"
-        , toMinutes end - toMinutes start |> scale |> String.fromInt |> style "height"
+        , style "text-decoration" "none"
+        , style "color" "black"
+        , toMinutes event.start - startTime |> scale |> String.fromInt |> style "top"
+        , toMinutes event.end - toMinutes event.start |> scale |> String.fromInt |> style "height"
+        , href event.link
         ]
-        [ text name
-        , br [] []
-        , text <| viewTime start ++ " - " ++ viewTime end
+        [ div []
+            [ i [ style "margin" "0px" ] [ text event.title ]
+            , br [] []
+            , text event.name
+            , br [] []
+            , text <| viewTime event.start ++ " - " ++ viewTime event.end
+            ]
         ]
 
 

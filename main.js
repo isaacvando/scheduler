@@ -5298,7 +5298,7 @@ var $author$project$Main$init = function (_v0) {
 				$elm$core$String$join,
 				'\n',
 				_List_fromArray(
-					['How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A', 'The Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B', 'I love waking up early,11:00AM,1:25PM,Room C', 'Another one,12:00AM,1:25PM,Room B', 'Yet Another,11:05AM,1:00PM,Room A'])),
+					['How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com', 'The Effects of Excessive Tomato Consumption,jeff bob,3:00PM,3:45PM,Room B,https://example.com', 'I love waking up early,jeff bob,11:00AM,1:25PM,Room C,https://example.com', 'Another one,jeff bob,12:00AM,1:25PM,Room B,https://example.com'])),
 			schedule: $elm$core$Result$Ok(_List_Nil)
 		},
 		$elm$core$Platform$Cmd$none);
@@ -5314,10 +5314,6 @@ var $elm$core$Result$andThen = F2(
 			var msg = result.a;
 			return $elm$core$Result$Err(msg);
 		}
-	});
-var $author$project$Main$Event = F4(
-	function (a, b, c, d) {
-		return {$: 'Event', a: a, b: b, c: c, d: d};
 	});
 var $elm$core$Result$mapError = F2(
 	function (f, result) {
@@ -5850,14 +5846,18 @@ var $author$project$Main$toTime = function (time) {
 };
 var $author$project$Main$toEvent = function (row) {
 	var _v0 = A2($elm$core$String$split, ',', row);
-	if ((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && (!_v0.b.b.b.b.b)) {
-		var name = _v0.a;
+	if ((((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && _v0.b.b.b.b.b) && _v0.b.b.b.b.b.b) && (!_v0.b.b.b.b.b.b.b)) {
+		var title = _v0.a;
 		var _v1 = _v0.b;
-		var start = _v1.a;
+		var name = _v1.a;
 		var _v2 = _v1.b;
-		var end = _v2.a;
+		var start = _v2.a;
 		var _v3 = _v2.b;
-		var venue = _v3.a;
+		var end = _v3.a;
+		var _v4 = _v3.b;
+		var venue = _v4.a;
+		var _v5 = _v4.b;
+		var link = _v5.a;
 		return A2(
 			$elm$core$Result$andThen,
 			function (s) {
@@ -5865,13 +5865,13 @@ var $author$project$Main$toEvent = function (row) {
 					$elm$core$Result$andThen,
 					function (e) {
 						return $elm$core$Result$Ok(
-							A4($author$project$Main$Event, name, s, e, venue));
+							{end: e, link: link, name: name, start: s, title: title, venue: venue});
 					},
 					$author$project$Main$toTime(end));
 			},
 			$author$project$Main$toTime(start));
 	} else {
-		return $elm$core$Result$Err('I was expecting four comma separated values but got ' + (row + ' instead'));
+		return $elm$core$Result$Err('I was expecting 6 comma separated values but got \'' + (row + '\' instead'));
 	}
 };
 var $author$project$Main$generateHelper = F2(
@@ -6099,9 +6099,8 @@ var $author$project$Main$getTotalTime = function (events) {
 			$elm$core$List$maximum(
 				A2(
 					$elm$core$List$map,
-					function (_v0) {
-						var end = _v0.c;
-						return $author$project$Main$toMinutes(end);
+					function (e) {
+						return $author$project$Main$toMinutes(e.end);
 					},
 					events))) - A2(
 			$elm$core$Maybe$withDefault,
@@ -6109,9 +6108,8 @@ var $author$project$Main$getTotalTime = function (events) {
 			$elm$core$List$minimum(
 				A2(
 					$elm$core$List$map,
-					function (_v1) {
-						var start = _v1.b;
-						return $author$project$Main$toMinutes(start);
+					function (e) {
+						return $author$project$Main$toMinutes(e.start);
 					},
 					events))));
 };
@@ -6669,18 +6667,16 @@ var $elm_community$dict_extra$Dict$Extra$groupBy = F2(
 			$elm$core$Dict$empty,
 			list);
 	});
-var $author$project$Main$groupByVenue = function (events) {
-	return $elm$core$Dict$toList(
-		A2(
-			$elm_community$dict_extra$Dict$Extra$groupBy,
-			function (_v0) {
-				var venue = _v0.d;
-				return venue;
-			},
-			events));
-};
 var $elm$html$Html$hr = _VirtualDom_node('hr');
+var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$br = _VirtualDom_node('br');
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $author$project$Main$fromString = function (amPm) {
 	if (amPm.$ === 'AM') {
 		return 'AM';
@@ -6699,14 +6695,12 @@ var $author$project$Main$viewTime = function (_v0) {
 };
 var $author$project$Main$width = '140px';
 var $author$project$Main$viewEvent = F2(
-	function (startTime, _v0) {
-		var name = _v0.a;
-		var start = _v0.b;
-		var end = _v0.c;
+	function (startTime, event) {
 		return A2(
-			$elm$html$Html$div,
+			$elm$html$Html$a,
 			_List_fromArray(
 				[
+					$elm$html$Html$Attributes$class('event'),
 					A2($elm$html$Html$Attributes$style, 'width', $author$project$Main$width),
 					A2($elm$html$Html$Attributes$style, 'box-sizing', 'border-box'),
 					A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
@@ -6717,25 +6711,45 @@ var $author$project$Main$viewEvent = F2(
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
 					A2($elm$html$Html$Attributes$style, 'display', 'grid'),
 					A2($elm$html$Html$Attributes$style, 'place-items', 'center'),
+					A2($elm$html$Html$Attributes$style, 'text-decoration', 'none'),
+					A2($elm$html$Html$Attributes$style, 'color', 'black'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'top',
 					$elm$core$String$fromInt(
 						$author$project$Main$scale(
-							$author$project$Main$toMinutes(start) - startTime))),
+							$author$project$Main$toMinutes(event.start) - startTime))),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'height',
 					$elm$core$String$fromInt(
 						$author$project$Main$scale(
-							$author$project$Main$toMinutes(end) - $author$project$Main$toMinutes(start))))
+							$author$project$Main$toMinutes(event.end) - $author$project$Main$toMinutes(event.start)))),
+					$elm$html$Html$Attributes$href(event.link)
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(name),
-					A2($elm$html$Html$br, _List_Nil, _List_Nil),
-					$elm$html$Html$text(
-					$author$project$Main$viewTime(start) + (' - ' + $author$project$Main$viewTime(end)))
+					A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$i,
+							_List_fromArray(
+								[
+									A2($elm$html$Html$Attributes$style, 'margin', '0px')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(event.title)
+								])),
+							A2($elm$html$Html$br, _List_Nil, _List_Nil),
+							$elm$html$Html$text(event.name),
+							A2($elm$html$Html$br, _List_Nil, _List_Nil),
+							$elm$html$Html$text(
+							$author$project$Main$viewTime(event.start) + (' - ' + $author$project$Main$viewTime(event.end)))
+						]))
 				]));
 	});
 var $author$project$Main$viewEvents = F3(
@@ -6792,11 +6806,17 @@ var $author$project$Main$viewSchedule = function (events) {
 			$elm$core$List$minimum(
 				A2(
 					$elm$core$List$map,
-					function (_v1) {
-						var start = _v1.b;
-						return $author$project$Main$toMinutes(start);
+					function (e) {
+						return $author$project$Main$toMinutes(e.start);
 					},
 					es)));
+		var grouped = $elm$core$Dict$toList(
+			A2(
+				$elm_community$dict_extra$Dict$Extra$groupBy,
+				function ($) {
+					return $.venue;
+				},
+				es));
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -6814,7 +6834,7 @@ var $author$project$Main$viewSchedule = function (events) {
 						A2(
 							$elm$core$List$map,
 							$author$project$Main$const($author$project$Main$width),
-							$author$project$Main$groupByVenue(es)))),
+							grouped))),
 					A2($elm$html$Html$Attributes$style, 'gap', '14px'),
 					A2($elm$html$Html$Attributes$style, 'padding', '7px'),
 					A2($elm$html$Html$Attributes$style, 'position', 'relative')
@@ -6825,7 +6845,7 @@ var $author$project$Main$viewSchedule = function (events) {
 					$author$project$Main$viewColumn,
 					startTime,
 					$author$project$Main$getTotalTime(es)),
-				$author$project$Main$groupByVenue(es)));
+				grouped));
 	}
 };
 var $author$project$Main$view = function (model) {
