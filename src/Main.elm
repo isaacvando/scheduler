@@ -138,8 +138,7 @@ view model =
     , body =
         [ div
             [ style "font-face" "sans-serif"
-            , style "width" "70%"
-            , style "margin" "auto"
+            , style "margin-left" "20px"
             ]
             [ h1 [] [ text "Schedule Maker" ]
             , viewSchedule model.schedule
@@ -185,8 +184,9 @@ viewSchedule events =
                 , style "border-radius" "10"
                 , class "schedule"
                 , style "display" "grid"
-                , style "grid-template-columns" (List.map (const " 1fr") (groupByVenue es) |> String.concat)
+                , style "grid-template-columns" (List.map (const " 140px") (groupByVenue es) |> String.concat)
                 , style "gap" "10px"
+                , style "width" "400px"
                 ]
                 (List.map (viewColumn startTime) (groupByVenue es))
 
@@ -200,7 +200,10 @@ groupByVenue events =
 
 viewColumn : Int -> ( String, List Event ) -> Html Msg
 viewColumn startTime ( title, events ) =
-    div [ class "column" ]
+    div
+        [ class "column"
+        , style "margin" "10px"
+        ]
         [ text title
         , viewEvents startTime events
         ]
@@ -218,20 +221,22 @@ viewEvents startTime events =
 viewEvent : Int -> Event -> Html Msg
 viewEvent startTime (Event name start end venue) =
     div
-        [ style "width" "120"
+        [ style "width" "120px"
         , style "background-color" "#ADD8E6"
-        , style "display" "inline-block"
         , style "margin" "10"
-        , style "padding" "2"
+        , style "padding" "5px"
         , style "border" "1px solid black"
         , style "border-radius" "5px"
         , style "font-size" "12px"
         , style "position" "absolute"
+        , style "display" "grid"
+        , style "place-items" "center"
         , toMinutes start - startTime |> scale |> String.fromInt |> style "top"
         , toMinutes end - toMinutes start |> scale |> String.fromInt |> style "height"
         ]
-        [ p [] [ text name ]
-        , p [] [ text <| viewTime start ++ " - " ++ viewTime end ]
+        [ text name
+        , br [] []
+        , text <| viewTime start ++ " - " ++ viewTime end
         ]
 
 

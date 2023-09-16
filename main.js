@@ -6645,7 +6645,7 @@ var $author$project$Main$toMinutes = function (_v0) {
 	var amPm = _v0.c;
 	return ((60 * hour) + minute) + (_Utils_eq(amPm, $author$project$Main$PM) ? (12 * 60) : 0);
 };
-var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$br = _VirtualDom_node('br');
 var $author$project$Main$scale = function (x) {
 	return x * 1;
 };
@@ -6675,15 +6675,16 @@ var $author$project$Main$viewEvent = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					A2($elm$html$Html$Attributes$style, 'width', '120'),
+					A2($elm$html$Html$Attributes$style, 'width', '120px'),
 					A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
-					A2($elm$html$Html$Attributes$style, 'display', 'inline-block'),
 					A2($elm$html$Html$Attributes$style, 'margin', '10'),
-					A2($elm$html$Html$Attributes$style, 'padding', '2'),
+					A2($elm$html$Html$Attributes$style, 'padding', '5px'),
 					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
 					A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
 					A2($elm$html$Html$Attributes$style, 'font-size', '12px'),
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2($elm$html$Html$Attributes$style, 'display', 'grid'),
+					A2($elm$html$Html$Attributes$style, 'place-items', 'center'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'top',
@@ -6699,21 +6700,10 @@ var $author$project$Main$viewEvent = F2(
 				]),
 			_List_fromArray(
 				[
-					A2(
-					$elm$html$Html$p,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text(name)
-						])),
-					A2(
-					$elm$html$Html$p,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text(
-							$author$project$Main$viewTime(start) + (' - ' + $author$project$Main$viewTime(end)))
-						]))
+					$elm$html$Html$text(name),
+					A2($elm$html$Html$br, _List_Nil, _List_Nil),
+					$elm$html$Html$text(
+					$author$project$Main$viewTime(start) + (' - ' + $author$project$Main$viewTime(end)))
 				]));
 	});
 var $author$project$Main$viewEvents = F2(
@@ -6738,7 +6728,8 @@ var $author$project$Main$viewColumn = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('column')
+					$elm$html$Html$Attributes$class('column'),
+					A2($elm$html$Html$Attributes$style, 'margin', '10px')
 				]),
 			_List_fromArray(
 				[
@@ -6777,9 +6768,10 @@ var $author$project$Main$viewSchedule = function (events) {
 					$elm$core$String$concat(
 						A2(
 							$elm$core$List$map,
-							$author$project$Main$const(' 1fr'),
+							$author$project$Main$const(' 140px'),
 							$author$project$Main$groupByVenue(es)))),
-					A2($elm$html$Html$Attributes$style, 'gap', '10px')
+					A2($elm$html$Html$Attributes$style, 'gap', '10px'),
+					A2($elm$html$Html$Attributes$style, 'width', '400px')
 				]),
 			A2(
 				$elm$core$List$map,
@@ -6796,8 +6788,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						A2($elm$html$Html$Attributes$style, 'font-face', 'sans-serif'),
-						A2($elm$html$Html$Attributes$style, 'width', '70%'),
-						A2($elm$html$Html$Attributes$style, 'margin', 'auto')
+						A2($elm$html$Html$Attributes$style, 'margin-left', '20px')
 					]),
 				_List_fromArray(
 					[
