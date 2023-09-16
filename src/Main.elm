@@ -139,6 +139,9 @@ view model =
         [ div
             [ style "font-face" "sans-serif"
             , style "margin-left" "20px"
+            , style "display" "flex"
+            , style "align-items" "center"
+            , style "flex-direction" "column"
             ]
             [ h1 [] [ text "Schedule Maker" ]
             , viewSchedule model.schedule
@@ -184,11 +187,27 @@ viewSchedule events =
                 , style "border-radius" "10"
                 , class "schedule"
                 , style "display" "grid"
-                , style "grid-template-columns" (List.map (const " 140px") (groupByVenue es) |> String.concat)
-                , style "gap" "10px"
-                , style "width" "400px"
+                , style "grid-template-columns" (List.map (const width) (groupByVenue es) |> String.join " ")
+                , style "gap" "14px"
+                , style "padding" "7px"
+                , style "position" "relative"
                 ]
-                (List.map (viewColumn startTime) (groupByVenue es))
+                (List.map (viewColumn startTime (getTotalTime es)) (groupByVenue es))
+
+
+getTotalTime : List Event -> Int
+getTotalTime events =
+    (events
+        |> List.map (\(Event _ _ end _) -> toMinutes end)
+        |> List.maximum
+        |> Maybe.withDefault 0
+    )
+        - (events
+            |> List.map (\(Event _ start _ _) -> toMinutes start)
+            |> List.minimum
+            |> Maybe.withDefault 0
+          )
+        |> scale
 
 
 groupByVenue : List Event -> List ( String, List Event )
@@ -198,32 +217,37 @@ groupByVenue events =
         |> Dict.toList
 
 
-viewColumn : Int -> ( String, List Event ) -> Html Msg
-viewColumn startTime ( title, events ) =
+viewColumn : Int -> Int -> ( String, List Event ) -> Html Msg
+viewColumn startTime totalTime ( title, events ) =
     div
         [ class "column"
-        , style "margin" "10px"
         ]
         [ text title
-        , viewEvents startTime events
+        , hr
+            [ style "background-color" "black"
+            , style "border-style" "solid"
+            , style "border-width" "0.5px"
+            ]
+            []
+        , viewEvents startTime totalTime events
         ]
 
 
-viewEvents : Int -> List Event -> Html Msg
-viewEvents startTime events =
+viewEvents : Int -> Int -> List Event -> Html Msg
+viewEvents startTime totalTime events =
     div
         [ style "position" "relative"
-        , style "height" "400px"
+        , style "height" (String.fromInt totalTime ++ "px")
         ]
         (List.map (viewEvent startTime) events)
 
 
 viewEvent : Int -> Event -> Html Msg
-viewEvent startTime (Event name start end venue) =
+viewEvent startTime (Event name start end _) =
     div
-        [ style "width" "120px"
+        [ style "width" width
+        , style "box-sizing" "border-box"
         , style "background-color" "#ADD8E6"
-        , style "margin" "10"
         , style "padding" "5px"
         , style "border" "1px solid black"
         , style "border-radius" "5px"
@@ -242,7 +266,12 @@ viewEvent startTime (Event name start end venue) =
 
 scale : Int -> Int
 scale x =
-    x * 1
+    toFloat x * 1.4 |> ceiling
+
+
+width : String
+width =
+    "140px"
 
 
 toMinutes : Time -> Int

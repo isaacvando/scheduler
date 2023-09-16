@@ -1,0 +1,14 @@
+.column:before {
+  background-color: black;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: black;
+  margin-left: -7px;
+}
+
+.column:first-child::before {
+  display: none;
+}

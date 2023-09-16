@@ -6044,13 +6044,76 @@ var $author$project$Main$viewForm = function (model) {
 			]));
 };
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
 var $author$project$Main$const = function (result) {
 	return function (_v0) {
 		return result;
 	};
+};
+var $elm$core$List$maximum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$max, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$List$minimum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Main$scale = function (x) {
+	return $elm$core$Basics$ceiling(x * 1.4);
+};
+var $author$project$Main$toMinutes = function (_v0) {
+	var hour = _v0.a;
+	var minute = _v0.b;
+	var amPm = _v0.c;
+	return ((60 * hour) + minute) + (_Utils_eq(amPm, $author$project$Main$PM) ? (12 * 60) : 0);
+};
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Main$getTotalTime = function (events) {
+	return $author$project$Main$scale(
+		A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$maximum(
+				A2(
+					$elm$core$List$map,
+					function (_v0) {
+						var end = _v0.c;
+						return $author$project$Main$toMinutes(end);
+					},
+					events))) - A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$minimum(
+				A2(
+					$elm$core$List$map,
+					function (_v1) {
+						var start = _v1.b;
+						return $author$project$Main$toMinutes(start);
+					},
+					events))));
 };
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -6582,15 +6645,6 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $elm_community$dict_extra$Dict$Extra$groupBy = F2(
 	function (keyfn, list) {
 		return A3(
@@ -6625,30 +6679,8 @@ var $author$project$Main$groupByVenue = function (events) {
 			},
 			events));
 };
-var $elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
-var $elm$core$List$minimum = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(
-			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
-var $author$project$Main$toMinutes = function (_v0) {
-	var hour = _v0.a;
-	var minute = _v0.b;
-	var amPm = _v0.c;
-	return ((60 * hour) + minute) + (_Utils_eq(amPm, $author$project$Main$PM) ? (12 * 60) : 0);
-};
+var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$br = _VirtualDom_node('br');
-var $author$project$Main$scale = function (x) {
-	return x * 1;
-};
 var $author$project$Main$fromString = function (amPm) {
 	if (amPm.$ === 'AM') {
 		return 'AM';
@@ -6665,19 +6697,19 @@ var $author$project$Main$viewTime = function (_v0) {
 	var amPm = _v0.c;
 	return $elm$core$String$fromInt(hour) + (':' + ($author$project$Main$viewTimeNumeral(minute) + (' ' + $author$project$Main$fromString(amPm))));
 };
+var $author$project$Main$width = '140px';
 var $author$project$Main$viewEvent = F2(
 	function (startTime, _v0) {
 		var name = _v0.a;
 		var start = _v0.b;
 		var end = _v0.c;
-		var venue = _v0.d;
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					A2($elm$html$Html$Attributes$style, 'width', '120px'),
+					A2($elm$html$Html$Attributes$style, 'width', $author$project$Main$width),
+					A2($elm$html$Html$Attributes$style, 'box-sizing', 'border-box'),
 					A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
-					A2($elm$html$Html$Attributes$style, 'margin', '10'),
 					A2($elm$html$Html$Attributes$style, 'padding', '5px'),
 					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
 					A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
@@ -6706,35 +6738,46 @@ var $author$project$Main$viewEvent = F2(
 					$author$project$Main$viewTime(start) + (' - ' + $author$project$Main$viewTime(end)))
 				]));
 	});
-var $author$project$Main$viewEvents = F2(
-	function (startTime, events) {
+var $author$project$Main$viewEvents = F3(
+	function (startTime, totalTime, events) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'relative'),
-					A2($elm$html$Html$Attributes$style, 'height', '400px')
+					A2(
+					$elm$html$Html$Attributes$style,
+					'height',
+					$elm$core$String$fromInt(totalTime) + 'px')
 				]),
 			A2(
 				$elm$core$List$map,
 				$author$project$Main$viewEvent(startTime),
 				events));
 	});
-var $author$project$Main$viewColumn = F2(
-	function (startTime, _v0) {
+var $author$project$Main$viewColumn = F3(
+	function (startTime, totalTime, _v0) {
 		var title = _v0.a;
 		var events = _v0.b;
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('column'),
-					A2($elm$html$Html$Attributes$style, 'margin', '10px')
+					$elm$html$Html$Attributes$class('column')
 				]),
 			_List_fromArray(
 				[
 					$elm$html$Html$text(title),
-					A2($author$project$Main$viewEvents, startTime, events)
+					A2(
+					$elm$html$Html$hr,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'background-color', 'black'),
+							A2($elm$html$Html$Attributes$style, 'border-style', 'solid'),
+							A2($elm$html$Html$Attributes$style, 'border-width', '0.5px')
+						]),
+					_List_Nil),
+					A3($author$project$Main$viewEvents, startTime, totalTime, events)
 				]));
 	});
 var $author$project$Main$viewSchedule = function (events) {
@@ -6765,17 +6808,23 @@ var $author$project$Main$viewSchedule = function (events) {
 					A2(
 					$elm$html$Html$Attributes$style,
 					'grid-template-columns',
-					$elm$core$String$concat(
+					A2(
+						$elm$core$String$join,
+						' ',
 						A2(
 							$elm$core$List$map,
-							$author$project$Main$const(' 140px'),
+							$author$project$Main$const($author$project$Main$width),
 							$author$project$Main$groupByVenue(es)))),
-					A2($elm$html$Html$Attributes$style, 'gap', '10px'),
-					A2($elm$html$Html$Attributes$style, 'width', '400px')
+					A2($elm$html$Html$Attributes$style, 'gap', '14px'),
+					A2($elm$html$Html$Attributes$style, 'padding', '7px'),
+					A2($elm$html$Html$Attributes$style, 'position', 'relative')
 				]),
 			A2(
 				$elm$core$List$map,
-				$author$project$Main$viewColumn(startTime),
+				A2(
+					$author$project$Main$viewColumn,
+					startTime,
+					$author$project$Main$getTotalTime(es)),
 				$author$project$Main$groupByVenue(es)));
 	}
 };
@@ -6788,7 +6837,10 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						A2($elm$html$Html$Attributes$style, 'font-face', 'sans-serif'),
-						A2($elm$html$Html$Attributes$style, 'margin-left', '20px')
+						A2($elm$html$Html$Attributes$style, 'margin-left', '20px'),
+						A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+						A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+						A2($elm$html$Html$Attributes$style, 'flex-direction', 'column')
 					]),
 				_List_fromArray(
 					[
