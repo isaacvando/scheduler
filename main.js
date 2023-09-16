@@ -5294,7 +5294,11 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
-			csv: 'How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B',
+			csv: A2(
+				$elm$core$String$join,
+				'\n',
+				_List_fromArray(
+					['How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A', 'The Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B', 'I love waking up early,11:00AM,1:25PM,Room C', 'Another one,12:00AM,1:25PM,Room B', 'Yet Another,11:05AM,1:00PM,Room A'])),
 			schedule: $elm$core$Result$Ok(_List_Nil)
 		},
 		$elm$core$Platform$Cmd$none);
@@ -5917,28 +5921,23 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$Csv = function (a) {
 	return {$: 'Csv', a: a};
 };
 var $author$project$Main$GenerateSchedule = {$: 'GenerateSchedule'};
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$Attributes$cols = function (n) {
 	return A2(
 		_VirtualDom_attribute,
 		'cols',
 		$elm$core$String$fromInt(n));
 };
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -5990,6 +5989,14 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$rows = function (n) {
 	return A2(
@@ -5997,12 +6004,54 @@ var $elm$html$Html$Attributes$rows = function (n) {
 		'rows',
 		$elm$core$String$fromInt(n));
 };
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Main$viewForm = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$label,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Event Schedule')
+					])),
+				A2(
+				$elm$html$Html$textarea,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$rows(15),
+						$elm$html$Html$Attributes$cols(70),
+						A2($elm$html$Html$Attributes$style, 'display', 'block'),
+						$elm$html$Html$Attributes$placeholder('How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM'),
+						$elm$html$Html$Events$onInput($author$project$Main$Csv),
+						$elm$html$Html$Attributes$value(model.csv)
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Main$GenerateSchedule)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Generate Schedule')
+					]))
+			]));
+};
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
+var $author$project$Main$const = function (result) {
+	return function (_v0) {
+		return result;
+	};
+};
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -6576,13 +6625,30 @@ var $author$project$Main$groupByVenue = function (events) {
 			},
 			events));
 };
-var $author$project$Main$height = 480;
-var $elm$html$Html$table = _VirtualDom_node('table');
-var $elm$html$Html$td = _VirtualDom_node('td');
-var $elm$html$Html$th = _VirtualDom_node('th');
-var $elm$html$Html$thead = _VirtualDom_node('thead');
-var $elm$html$Html$tr = _VirtualDom_node('tr');
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$List$minimum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Main$toMinutes = function (_v0) {
+	var hour = _v0.a;
+	var minute = _v0.b;
+	var amPm = _v0.c;
+	return ((60 * hour) + minute) + (_Utils_eq(amPm, $author$project$Main$PM) ? (12 * 60) : 0);
+};
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $author$project$Main$scale = function (x) {
+	return x * 1;
+};
 var $author$project$Main$fromString = function (amPm) {
 	if (amPm.$ === 'AM') {
 		return 'AM';
@@ -6599,105 +6665,126 @@ var $author$project$Main$viewTime = function (_v0) {
 	var amPm = _v0.c;
 	return $elm$core$String$fromInt(hour) + (':' + ($author$project$Main$viewTimeNumeral(minute) + (' ' + $author$project$Main$fromString(amPm))));
 };
-var $author$project$Main$viewEvent = function (_v0) {
-	var name = _v0.a;
-	var start = _v0.b;
-	var end = _v0.c;
-	var venue = _v0.d;
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				A2($elm$html$Html$Attributes$style, 'width', '120'),
-				A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
-				A2($elm$html$Html$Attributes$style, 'display', 'inline-block'),
-				A2($elm$html$Html$Attributes$style, 'margin', '10'),
-				A2($elm$html$Html$Attributes$style, 'padding', '2'),
-				A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
-				A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
-				A2($elm$html$Html$Attributes$style, 'font-size', '12px'),
-				A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-				A2($elm$html$Html$Attributes$style, 'top', '0'),
-				A2($elm$html$Html$Attributes$style, 'bottom', '100px')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(name)
-					])),
-				A2(
-				$elm$html$Html$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Main$viewTime(start) + (' - ' + $author$project$Main$viewTime(end)))
-					]))
-			]));
-};
+var $author$project$Main$viewEvent = F2(
+	function (startTime, _v0) {
+		var name = _v0.a;
+		var start = _v0.b;
+		var end = _v0.c;
+		var venue = _v0.d;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'width', '120'),
+					A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
+					A2($elm$html$Html$Attributes$style, 'display', 'inline-block'),
+					A2($elm$html$Html$Attributes$style, 'margin', '10'),
+					A2($elm$html$Html$Attributes$style, 'padding', '2'),
+					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
+					A2($elm$html$Html$Attributes$style, 'font-size', '12px'),
+					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'top',
+					$elm$core$String$fromInt(
+						$author$project$Main$scale(
+							$author$project$Main$toMinutes(start) - startTime))),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'height',
+					$elm$core$String$fromInt(
+						$author$project$Main$scale(
+							$author$project$Main$toMinutes(end) - $author$project$Main$toMinutes(start))))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(name)
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$Main$viewTime(start) + (' - ' + $author$project$Main$viewTime(end)))
+						]))
+				]));
+	});
+var $author$project$Main$viewEvents = F2(
+	function (startTime, events) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'position', 'relative'),
+					A2($elm$html$Html$Attributes$style, 'height', '400px')
+				]),
+			A2(
+				$elm$core$List$map,
+				$author$project$Main$viewEvent(startTime),
+				events));
+	});
+var $author$project$Main$viewColumn = F2(
+	function (startTime, _v0) {
+		var title = _v0.a;
+		var events = _v0.b;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('column')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(title),
+					A2($author$project$Main$viewEvents, startTime, events)
+				]));
+	});
 var $author$project$Main$viewSchedule = function (events) {
 	if (events.$ === 'Err') {
 		var error = events.a;
 		return $elm$html$Html$text('There was an error generating the schedule: ' + error);
 	} else {
 		var es = events.a;
-		var grouped = $author$project$Main$groupByVenue(es);
+		var startTime = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$minimum(
+				A2(
+					$elm$core$List$map,
+					function (_v1) {
+						var start = _v1.b;
+						return $author$project$Main$toMinutes(start);
+					},
+					es)));
 		return A2(
-			$elm$html$Html$table,
+			$elm$html$Html$div,
 			_List_fromArray(
 				[
+					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '10'),
+					$elm$html$Html$Attributes$class('schedule'),
+					A2($elm$html$Html$Attributes$style, 'display', 'grid'),
 					A2(
 					$elm$html$Html$Attributes$style,
-					'height',
-					$elm$core$String$fromInt($author$project$Main$height)),
-					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
-					A2($elm$html$Html$Attributes$style, 'border-radius', '10')
+					'grid-template-columns',
+					$elm$core$String$concat(
+						A2(
+							$elm$core$List$map,
+							$author$project$Main$const(' 1fr'),
+							$author$project$Main$groupByVenue(es)))),
+					A2($elm$html$Html$Attributes$style, 'gap', '10px')
 				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$thead,
-					_List_Nil,
-					A2(
-						$elm$core$List$map,
-						function (_v1) {
-							var venue = _v1.a;
-							return A2(
-								$elm$html$Html$th,
-								_List_Nil,
-								_List_fromArray(
-									[
-										$elm$html$Html$text(venue)
-									]));
-						},
-						grouped)),
-					A2(
-					$elm$html$Html$tr,
-					_List_Nil,
-					A2(
-						$elm$core$List$map,
-						function (_v2) {
-							var xs = _v2.b;
-							return A2(
-								$elm$html$Html$td,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'position', 'relative')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_Nil,
-										A2($elm$core$List$map, $author$project$Main$viewEvent, xs))
-									]));
-						},
-						grouped))
-				]));
+			A2(
+				$elm$core$List$map,
+				$author$project$Main$viewColumn(startTime),
+				$author$project$Main$groupByVenue(es)));
 	}
 };
 var $author$project$Main$view = function (model) {
@@ -6722,44 +6809,7 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text('Schedule Maker')
 							])),
 						$author$project$Main$viewSchedule(model.schedule),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('form-row')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$label,
-								_List_Nil,
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Event Schedule')
-									])),
-								A2(
-								$elm$html$Html$textarea,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$rows(15),
-										$elm$html$Html$Attributes$cols(70),
-										A2($elm$html$Html$Attributes$style, 'display', 'block'),
-										$elm$html$Html$Attributes$placeholder('How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM'),
-										$elm$html$Html$Events$onInput($author$project$Main$Csv),
-										$elm$html$Html$Attributes$value(model.csv)
-									]),
-								_List_Nil)
-							])),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick($author$project$Main$GenerateSchedule)
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Generate Schedule')
-							]))
+						$author$project$Main$viewForm(model)
 					]))
 			]),
 		title: 'Schedule Maker'

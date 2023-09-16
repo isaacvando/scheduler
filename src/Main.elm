@@ -7,7 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List
-import Parser exposing ((|.), (|=))
+import Parser exposing ((|.), (|=), int)
 
 
 main =
@@ -46,7 +46,18 @@ type AmPm
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { csv = "How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B", schedule = Ok [] }, Cmd.none )
+    ( { csv =
+            String.join "\n"
+                [ "How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A"
+                , "The Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room B"
+                , "I love waking up early,11:00AM,1:25PM,Room C"
+                , "Another one,12:00AM,1:25PM,Room B"
+                , "Yet Another,11:05AM,1:00PM,Room A"
+                ]
+      , schedule = Ok []
+      }
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -132,22 +143,27 @@ view model =
             ]
             [ h1 [] [ text "Schedule Maker" ]
             , viewSchedule model.schedule
-            , div [ class "form-row" ]
-                [ label [] [ text "Event Schedule" ]
-                , textarea
-                    [ rows 15
-                    , cols 70
-                    , style "display" "block"
-                    , placeholder "How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM"
-                    , onInput Csv
-                    , value model.csv
-                    ]
-                    []
-                ]
-            , button [ onClick GenerateSchedule ] [ text "Generate Schedule" ]
+            , viewForm model
             ]
         ]
     }
+
+
+viewForm : Model -> Html Msg
+viewForm model =
+    div []
+        [ label [] [ text "Event Schedule" ]
+        , textarea
+            [ rows 15
+            , cols 70
+            , style "display" "block"
+            , placeholder "How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM"
+            , onInput Csv
+            , value model.csv
+            ]
+            []
+        , button [ onClick GenerateSchedule ] [ text "Generate Schedule" ]
+        ]
 
 
 viewSchedule : Result String (List Event) -> Html Msg
@@ -158,54 +174,21 @@ viewSchedule events =
 
         Ok es ->
             let
-                grouped =
-                    groupByVenue es
+                startTime =
+                    es
+                        |> List.map (\(Event _ start _ _) -> toMinutes start)
+                        |> List.minimum
+                        |> Maybe.withDefault 0
             in
-            table
-                [ style "height" <| String.fromInt height
-                , style "border" "1px solid black"
+            div
+                [ style "border" "1px solid black"
                 , style "border-radius" "10"
+                , class "schedule"
+                , style "display" "grid"
+                , style "grid-template-columns" (List.map (const " 1fr") (groupByVenue es) |> String.concat)
+                , style "gap" "10px"
                 ]
-                [ thead []
-                    (grouped
-                        |> List.map
-                            (\( venue, _ ) ->
-                                th [] [ text venue ]
-                            )
-                    )
-                , tr []
-                    (grouped
-                        |> List.map
-                            (\( _, xs ) ->
-                                td
-                                    [ style "position" "relative"
-                                    ]
-                                    [ div [] (List.map viewEvent xs) ]
-                            )
-                    )
-                ]
-
-
-viewRow : List ( String, List Event ) -> Html Msg
-viewRow grouped =
-    let
-        maxDiff =
-            100
-    in
-    tr []
-        (grouped
-            |> List.map
-                (\( _, xs ) ->
-                    td
-                        [ style "position" "relative" ]
-                        [ div [] (List.map viewEvent xs) ]
-                )
-        )
-
-
-height : Int
-height =
-    480
+                (List.map (viewColumn startTime) (groupByVenue es))
 
 
 groupByVenue : List Event -> List ( String, List Event )
@@ -215,8 +198,25 @@ groupByVenue events =
         |> Dict.toList
 
 
-viewEvent : Event -> Html Msg
-viewEvent (Event name start end venue) =
+viewColumn : Int -> ( String, List Event ) -> Html Msg
+viewColumn startTime ( title, events ) =
+    div [ class "column" ]
+        [ text title
+        , viewEvents startTime events
+        ]
+
+
+viewEvents : Int -> List Event -> Html Msg
+viewEvents startTime events =
+    div
+        [ style "position" "relative"
+        , style "height" "400px"
+        ]
+        (List.map (viewEvent startTime) events)
+
+
+viewEvent : Int -> Event -> Html Msg
+viewEvent startTime (Event name start end venue) =
     div
         [ style "width" "120"
         , style "background-color" "#ADD8E6"
@@ -227,17 +227,17 @@ viewEvent (Event name start end venue) =
         , style "border-radius" "5px"
         , style "font-size" "12px"
         , style "position" "absolute"
-        , style "top" "0"
-        , style "bottom" "100px"
+        , toMinutes start - startTime |> scale |> String.fromInt |> style "top"
+        , toMinutes end - toMinutes start |> scale |> String.fromInt |> style "height"
         ]
         [ p [] [ text name ]
         , p [] [ text <| viewTime start ++ " - " ++ viewTime end ]
         ]
 
 
-diff : Time -> Time -> Int
-diff t1 t2 =
-    abs <| toMinutes t1 - toMinutes t2
+scale : Int -> Int
+scale x =
+    x * 1
 
 
 toMinutes : Time -> Int
@@ -275,3 +275,8 @@ fromString amPm =
 
         PM ->
             "PM"
+
+
+const : a -> (b -> a)
+const result =
+    \_ -> result
