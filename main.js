@@ -5305,6 +5305,9 @@ var $author$project$Main$init = function (_v0) {
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $BrianHicks$elm_csv$Csv$Decode$CustomFieldNames = function (a) {
+	return {$: 'CustomFieldNames', a: a};
+};
 var $elm$core$Result$andThen = F2(
 	function (callback, result) {
 		if (result.$ === 'Ok') {
@@ -5313,6 +5316,184 @@ var $elm$core$Result$andThen = F2(
 		} else {
 			var msg = result.a;
 			return $elm$core$Result$Err(msg);
+		}
+	});
+var $BrianHicks$elm_csv$Csv$Decode$ParsingError = function (a) {
+	return {$: 'ParsingError', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$DecodingErrors = function (a) {
+	return {$: 'DecodingErrors', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$OnlyColumn_ = {$: 'OnlyColumn_'};
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $BrianHicks$elm_csv$Csv$Decode$NoFieldNamesOnFirstRow = {$: 'NoFieldNamesOnFirstRow'};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Dict$Black = {$: 'Black'};
+var $elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+	});
+var $elm$core$Dict$Red = {$: 'Red'};
+var $elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+			var _v1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+				var _v3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					$elm$core$Dict$Red,
+					key,
+					value,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+				var _v5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _v6 = left.d;
+				var _v7 = _v6.a;
+				var llK = _v6.b;
+				var llV = _v6.c;
+				var llLeft = _v6.d;
+				var llRight = _v6.e;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					$elm$core$Dict$Red,
+					lK,
+					lV,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+			} else {
+				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var $elm$core$Basics$compare = _Utils_compare;
+var $elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _v1 = A2($elm$core$Basics$compare, key, nKey);
+			switch (_v1.$) {
+				case 'LT':
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3($elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 'EQ':
+					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3($elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var $elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
+		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+			var _v1 = _v0.a;
+			var k = _v0.b;
+			var v = _v0.c;
+			var l = _v0.d;
+			var r = _v0.e;
+			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _v0;
+			return x;
+		}
+	});
+var $elm$core$String$trim = _String_trim;
+var $BrianHicks$elm_csv$Csv$Decode$getFieldNames = F2(
+	function (headers, rows) {
+		var fromList = function (names) {
+			return A3(
+				$elm$core$List$foldl,
+				F2(
+					function (name, _v2) {
+						var soFar = _v2.a;
+						var i = _v2.b;
+						return _Utils_Tuple2(
+							A3($elm$core$Dict$insert, name, i, soFar),
+							i + 1);
+					}),
+				_Utils_Tuple2($elm$core$Dict$empty, 0),
+				names).a;
+		};
+		switch (headers.$) {
+			case 'NoFieldNames':
+				return $elm$core$Result$Ok(
+					_Utils_Tuple3($elm$core$Dict$empty, 0, rows));
+			case 'CustomFieldNames':
+				var names = headers.a;
+				return $elm$core$Result$Ok(
+					_Utils_Tuple3(
+						fromList(names),
+						0,
+						rows));
+			default:
+				if (!rows.b) {
+					return $elm$core$Result$Err($BrianHicks$elm_csv$Csv$Decode$NoFieldNamesOnFirstRow);
+				} else {
+					var first = rows.a;
+					var rest = rows.b;
+					return $elm$core$Result$Ok(
+						_Utils_Tuple3(
+							fromList(
+								A2($elm$core$List$map, $elm$core$String$trim, first)),
+							1,
+							rest));
+				}
+		}
+	});
+var $elm$core$Result$map = F2(
+	function (func, ra) {
+		if (ra.$ === 'Ok') {
+			var a = ra.a;
+			return $elm$core$Result$Ok(
+				func(a));
+		} else {
+			var e = ra.a;
+			return $elm$core$Result$Err(e);
 		}
 	});
 var $elm$core$Result$mapError = F2(
@@ -5326,6 +5507,1016 @@ var $elm$core$Result$mapError = F2(
 				f(e));
 		}
 	});
+var $BrianHicks$elm_csv$Csv$Decode$applyDecoder = F3(
+	function (fieldNames, _v0, allRows) {
+		var decode = _v0.a;
+		var defaultLocation = $BrianHicks$elm_csv$Csv$Decode$OnlyColumn_;
+		return A2(
+			$elm$core$Result$andThen,
+			function (_v1) {
+				var resolvedNames = _v1.a;
+				var firstRowNumber = _v1.b;
+				var rows = _v1.c;
+				return A2(
+					$elm$core$Result$mapError,
+					A2($elm$core$Basics$composeL, $BrianHicks$elm_csv$Csv$Decode$DecodingErrors, $elm$core$List$reverse),
+					A2(
+						$elm$core$Result$map,
+						$elm$core$List$reverse,
+						A3(
+							$elm$core$List$foldl,
+							F2(
+								function (row, _v2) {
+									var soFar = _v2.a;
+									var rowNum = _v2.b;
+									return _Utils_Tuple2(
+										function () {
+											var _v3 = A4(decode, defaultLocation, resolvedNames, rowNum, row);
+											if (_v3.$ === 'Ok') {
+												var val = _v3.a;
+												if (soFar.$ === 'Ok') {
+													var values = soFar.a;
+													return $elm$core$Result$Ok(
+														A2($elm$core$List$cons, val, values));
+												} else {
+													var errs = soFar.a;
+													return $elm$core$Result$Err(errs);
+												}
+											} else {
+												var err = _v3.a;
+												if (soFar.$ === 'Ok') {
+													return $elm$core$Result$Err(
+														_List_fromArray(
+															[err]));
+												} else {
+													var errs = soFar.a;
+													return $elm$core$Result$Err(
+														A2($elm$core$List$cons, err, errs));
+												}
+											}
+										}(),
+										rowNum + 1);
+								}),
+							_Utils_Tuple2(
+								$elm$core$Result$Ok(_List_Nil),
+								firstRowNumber),
+							rows).a));
+			},
+			A2($BrianHicks$elm_csv$Csv$Decode$getFieldNames, fieldNames, allRows));
+	});
+var $BrianHicks$elm_csv$Csv$Parser$AdditionalCharactersAfterClosingQuote = function (a) {
+	return {$: 'AdditionalCharactersAfterClosingQuote', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Parser$SourceEndedWithoutClosingQuote = function (a) {
+	return {$: 'SourceEndedWithoutClosingQuote', a: a};
+};
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Basics$ge = _Utils_ge;
+var $BrianHicks$elm_csv$Csv$Parser$parse = F2(
+	function (config, source) {
+		var finalLength = $elm$core$String$length(source);
+		var parseQuotedField = F4(
+			function (isFieldSeparator, soFar, startOffset, endOffset) {
+				parseQuotedField:
+				while (true) {
+					if ((endOffset - finalLength) >= 0) {
+						return $elm$core$Result$Err($BrianHicks$elm_csv$Csv$Parser$SourceEndedWithoutClosingQuote);
+					} else {
+						if (A3($elm$core$String$slice, endOffset, endOffset + 1, source) === '\"') {
+							var segment = A3($elm$core$String$slice, startOffset, endOffset, source);
+							if (((endOffset + 1) - finalLength) >= 0) {
+								return $elm$core$Result$Ok(
+									_Utils_Tuple3(
+										_Utils_ap(soFar, segment),
+										endOffset + 1,
+										false));
+							} else {
+								var next = A3($elm$core$String$slice, endOffset + 1, endOffset + 2, source);
+								if (next === '\"') {
+									var newPos = endOffset + 2;
+									var $temp$isFieldSeparator = isFieldSeparator,
+										$temp$soFar = soFar + (segment + '\"'),
+										$temp$startOffset = newPos,
+										$temp$endOffset = newPos;
+									isFieldSeparator = $temp$isFieldSeparator;
+									soFar = $temp$soFar;
+									startOffset = $temp$startOffset;
+									endOffset = $temp$endOffset;
+									continue parseQuotedField;
+								} else {
+									if (isFieldSeparator(next)) {
+										return $elm$core$Result$Ok(
+											_Utils_Tuple3(
+												_Utils_ap(soFar, segment),
+												endOffset + 2,
+												false));
+									} else {
+										if (next === '\n') {
+											return $elm$core$Result$Ok(
+												_Utils_Tuple3(
+													_Utils_ap(soFar, segment),
+													endOffset + 2,
+													true));
+										} else {
+											if ((next === '\u000D') && (A3($elm$core$String$slice, endOffset + 2, endOffset + 3, source) === '\n')) {
+												return $elm$core$Result$Ok(
+													_Utils_Tuple3(
+														_Utils_ap(soFar, segment),
+														endOffset + 3,
+														true));
+											} else {
+												return $elm$core$Result$Err($BrianHicks$elm_csv$Csv$Parser$AdditionalCharactersAfterClosingQuote);
+											}
+										}
+									}
+								}
+							}
+						} else {
+							var $temp$isFieldSeparator = isFieldSeparator,
+								$temp$soFar = soFar,
+								$temp$startOffset = startOffset,
+								$temp$endOffset = endOffset + 1;
+							isFieldSeparator = $temp$isFieldSeparator;
+							soFar = $temp$soFar;
+							startOffset = $temp$startOffset;
+							endOffset = $temp$endOffset;
+							continue parseQuotedField;
+						}
+					}
+				}
+			});
+		var parseComma = F4(
+			function (row, rows, startOffset, endOffset) {
+				parseComma:
+				while (true) {
+					if ((endOffset - finalLength) >= 0) {
+						var finalField = A3($elm$core$String$slice, startOffset, endOffset, source);
+						return ((finalField === '') && _Utils_eq(row, _List_Nil)) ? $elm$core$Result$Ok(
+							$elm$core$List$reverse(rows)) : $elm$core$Result$Ok(
+							$elm$core$List$reverse(
+								A2(
+									$elm$core$List$cons,
+									$elm$core$List$reverse(
+										A2($elm$core$List$cons, finalField, row)),
+									rows)));
+					} else {
+						var first = A3($elm$core$String$slice, endOffset, endOffset + 1, source);
+						if (first === ',') {
+							var newPos = endOffset + 1;
+							var $temp$row = A2(
+								$elm$core$List$cons,
+								A3($elm$core$String$slice, startOffset, endOffset, source),
+								row),
+								$temp$rows = rows,
+								$temp$startOffset = newPos,
+								$temp$endOffset = newPos;
+							row = $temp$row;
+							rows = $temp$rows;
+							startOffset = $temp$startOffset;
+							endOffset = $temp$endOffset;
+							continue parseComma;
+						} else {
+							if (first === '\n') {
+								var newPos = endOffset + 1;
+								var $temp$row = _List_Nil,
+									$temp$rows = A2(
+									$elm$core$List$cons,
+									$elm$core$List$reverse(
+										A2(
+											$elm$core$List$cons,
+											A3($elm$core$String$slice, startOffset, endOffset, source),
+											row)),
+									rows),
+									$temp$startOffset = newPos,
+									$temp$endOffset = newPos;
+								row = $temp$row;
+								rows = $temp$rows;
+								startOffset = $temp$startOffset;
+								endOffset = $temp$endOffset;
+								continue parseComma;
+							} else {
+								if ((first === '\u000D') && (A3($elm$core$String$slice, endOffset + 1, endOffset + 2, source) === '\n')) {
+									var newPos = endOffset + 2;
+									var $temp$row = _List_Nil,
+										$temp$rows = A2(
+										$elm$core$List$cons,
+										$elm$core$List$reverse(
+											A2(
+												$elm$core$List$cons,
+												A3($elm$core$String$slice, startOffset, endOffset, source),
+												row)),
+										rows),
+										$temp$startOffset = newPos,
+										$temp$endOffset = newPos;
+									row = $temp$row;
+									rows = $temp$rows;
+									startOffset = $temp$startOffset;
+									endOffset = $temp$endOffset;
+									continue parseComma;
+								} else {
+									if (first === '\"') {
+										var newPos = endOffset + 1;
+										var _v0 = A4(
+											parseQuotedField,
+											function (c) {
+												return c === ',';
+											},
+											'',
+											newPos,
+											newPos);
+										if (_v0.$ === 'Ok') {
+											var _v1 = _v0.a;
+											var value = _v1.a;
+											var afterQuotedField = _v1.b;
+											var rowEnded = _v1.c;
+											if (_Utils_cmp(afterQuotedField, finalLength) > -1) {
+												return $elm$core$Result$Ok(
+													$elm$core$List$reverse(
+														A2(
+															$elm$core$List$cons,
+															$elm$core$List$reverse(
+																A2($elm$core$List$cons, value, row)),
+															rows)));
+											} else {
+												if (rowEnded) {
+													var $temp$row = _List_Nil,
+														$temp$rows = A2(
+														$elm$core$List$cons,
+														$elm$core$List$reverse(
+															A2($elm$core$List$cons, value, row)),
+														rows),
+														$temp$startOffset = afterQuotedField,
+														$temp$endOffset = afterQuotedField;
+													row = $temp$row;
+													rows = $temp$rows;
+													startOffset = $temp$startOffset;
+													endOffset = $temp$endOffset;
+													continue parseComma;
+												} else {
+													var $temp$row = A2($elm$core$List$cons, value, row),
+														$temp$rows = rows,
+														$temp$startOffset = afterQuotedField,
+														$temp$endOffset = afterQuotedField;
+													row = $temp$row;
+													rows = $temp$rows;
+													startOffset = $temp$startOffset;
+													endOffset = $temp$endOffset;
+													continue parseComma;
+												}
+											}
+										} else {
+											var problem = _v0.a;
+											return $elm$core$Result$Err(
+												problem(
+													$elm$core$List$length(rows) + 1));
+										}
+									} else {
+										var $temp$row = row,
+											$temp$rows = rows,
+											$temp$startOffset = startOffset,
+											$temp$endOffset = endOffset + 1;
+										row = $temp$row;
+										rows = $temp$rows;
+										startOffset = $temp$startOffset;
+										endOffset = $temp$endOffset;
+										continue parseComma;
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		var parseHelp = F5(
+			function (isFieldSeparator, row, rows, startOffset, endOffset) {
+				parseHelp:
+				while (true) {
+					if ((endOffset - finalLength) >= 0) {
+						var finalField = A3($elm$core$String$slice, startOffset, endOffset, source);
+						return ((finalField === '') && _Utils_eq(row, _List_Nil)) ? $elm$core$Result$Ok(
+							$elm$core$List$reverse(rows)) : $elm$core$Result$Ok(
+							$elm$core$List$reverse(
+								A2(
+									$elm$core$List$cons,
+									$elm$core$List$reverse(
+										A2($elm$core$List$cons, finalField, row)),
+									rows)));
+					} else {
+						var first = A3($elm$core$String$slice, endOffset, endOffset + 1, source);
+						if (isFieldSeparator(first)) {
+							var newPos = endOffset + 1;
+							var $temp$isFieldSeparator = isFieldSeparator,
+								$temp$row = A2(
+								$elm$core$List$cons,
+								A3($elm$core$String$slice, startOffset, endOffset, source),
+								row),
+								$temp$rows = rows,
+								$temp$startOffset = newPos,
+								$temp$endOffset = newPos;
+							isFieldSeparator = $temp$isFieldSeparator;
+							row = $temp$row;
+							rows = $temp$rows;
+							startOffset = $temp$startOffset;
+							endOffset = $temp$endOffset;
+							continue parseHelp;
+						} else {
+							if (first === '\n') {
+								var newPos = endOffset + 1;
+								var $temp$isFieldSeparator = isFieldSeparator,
+									$temp$row = _List_Nil,
+									$temp$rows = A2(
+									$elm$core$List$cons,
+									$elm$core$List$reverse(
+										A2(
+											$elm$core$List$cons,
+											A3($elm$core$String$slice, startOffset, endOffset, source),
+											row)),
+									rows),
+									$temp$startOffset = newPos,
+									$temp$endOffset = newPos;
+								isFieldSeparator = $temp$isFieldSeparator;
+								row = $temp$row;
+								rows = $temp$rows;
+								startOffset = $temp$startOffset;
+								endOffset = $temp$endOffset;
+								continue parseHelp;
+							} else {
+								if ((first === '\u000D') && (A3($elm$core$String$slice, endOffset + 1, endOffset + 2, source) === '\n')) {
+									var newPos = endOffset + 2;
+									var $temp$isFieldSeparator = isFieldSeparator,
+										$temp$row = _List_Nil,
+										$temp$rows = A2(
+										$elm$core$List$cons,
+										$elm$core$List$reverse(
+											A2(
+												$elm$core$List$cons,
+												A3($elm$core$String$slice, startOffset, endOffset, source),
+												row)),
+										rows),
+										$temp$startOffset = newPos,
+										$temp$endOffset = newPos;
+									isFieldSeparator = $temp$isFieldSeparator;
+									row = $temp$row;
+									rows = $temp$rows;
+									startOffset = $temp$startOffset;
+									endOffset = $temp$endOffset;
+									continue parseHelp;
+								} else {
+									if (first === '\"') {
+										var newPos = endOffset + 1;
+										var _v2 = A4(parseQuotedField, isFieldSeparator, '', newPos, newPos);
+										if (_v2.$ === 'Ok') {
+											var _v3 = _v2.a;
+											var value = _v3.a;
+											var afterQuotedField = _v3.b;
+											var rowEnded = _v3.c;
+											if (_Utils_cmp(afterQuotedField, finalLength) > -1) {
+												return $elm$core$Result$Ok(
+													$elm$core$List$reverse(
+														A2(
+															$elm$core$List$cons,
+															$elm$core$List$reverse(
+																A2($elm$core$List$cons, value, row)),
+															rows)));
+											} else {
+												if (rowEnded) {
+													var $temp$isFieldSeparator = isFieldSeparator,
+														$temp$row = _List_Nil,
+														$temp$rows = A2(
+														$elm$core$List$cons,
+														$elm$core$List$reverse(
+															A2($elm$core$List$cons, value, row)),
+														rows),
+														$temp$startOffset = afterQuotedField,
+														$temp$endOffset = afterQuotedField;
+													isFieldSeparator = $temp$isFieldSeparator;
+													row = $temp$row;
+													rows = $temp$rows;
+													startOffset = $temp$startOffset;
+													endOffset = $temp$endOffset;
+													continue parseHelp;
+												} else {
+													var $temp$isFieldSeparator = isFieldSeparator,
+														$temp$row = A2($elm$core$List$cons, value, row),
+														$temp$rows = rows,
+														$temp$startOffset = afterQuotedField,
+														$temp$endOffset = afterQuotedField;
+													isFieldSeparator = $temp$isFieldSeparator;
+													row = $temp$row;
+													rows = $temp$rows;
+													startOffset = $temp$startOffset;
+													endOffset = $temp$endOffset;
+													continue parseHelp;
+												}
+											}
+										} else {
+											var problem = _v2.a;
+											return $elm$core$Result$Err(
+												problem(
+													$elm$core$List$length(rows) + 1));
+										}
+									} else {
+										var $temp$isFieldSeparator = isFieldSeparator,
+											$temp$row = row,
+											$temp$rows = rows,
+											$temp$startOffset = startOffset,
+											$temp$endOffset = endOffset + 1;
+										isFieldSeparator = $temp$isFieldSeparator;
+										row = $temp$row;
+										rows = $temp$rows;
+										startOffset = $temp$startOffset;
+										endOffset = $temp$endOffset;
+										continue parseHelp;
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		var parseSemicolon = F4(
+			function (row, rows, startOffset, endOffset) {
+				parseSemicolon:
+				while (true) {
+					if ((endOffset - finalLength) >= 0) {
+						var finalField = A3($elm$core$String$slice, startOffset, endOffset, source);
+						return ((finalField === '') && _Utils_eq(row, _List_Nil)) ? $elm$core$Result$Ok(
+							$elm$core$List$reverse(rows)) : $elm$core$Result$Ok(
+							$elm$core$List$reverse(
+								A2(
+									$elm$core$List$cons,
+									$elm$core$List$reverse(
+										A2($elm$core$List$cons, finalField, row)),
+									rows)));
+					} else {
+						var first = A3($elm$core$String$slice, endOffset, endOffset + 1, source);
+						if (first === ';') {
+							var newPos = endOffset + 1;
+							var $temp$row = A2(
+								$elm$core$List$cons,
+								A3($elm$core$String$slice, startOffset, endOffset, source),
+								row),
+								$temp$rows = rows,
+								$temp$startOffset = newPos,
+								$temp$endOffset = newPos;
+							row = $temp$row;
+							rows = $temp$rows;
+							startOffset = $temp$startOffset;
+							endOffset = $temp$endOffset;
+							continue parseSemicolon;
+						} else {
+							if (first === '\n') {
+								var newPos = endOffset + 1;
+								var $temp$row = _List_Nil,
+									$temp$rows = A2(
+									$elm$core$List$cons,
+									$elm$core$List$reverse(
+										A2(
+											$elm$core$List$cons,
+											A3($elm$core$String$slice, startOffset, endOffset, source),
+											row)),
+									rows),
+									$temp$startOffset = newPos,
+									$temp$endOffset = newPos;
+								row = $temp$row;
+								rows = $temp$rows;
+								startOffset = $temp$startOffset;
+								endOffset = $temp$endOffset;
+								continue parseSemicolon;
+							} else {
+								if ((first === '\u000D') && (A3($elm$core$String$slice, endOffset + 1, endOffset + 2, source) === '\n')) {
+									var newPos = endOffset + 2;
+									var $temp$row = _List_Nil,
+										$temp$rows = A2(
+										$elm$core$List$cons,
+										$elm$core$List$reverse(
+											A2(
+												$elm$core$List$cons,
+												A3($elm$core$String$slice, startOffset, endOffset, source),
+												row)),
+										rows),
+										$temp$startOffset = newPos,
+										$temp$endOffset = newPos;
+									row = $temp$row;
+									rows = $temp$rows;
+									startOffset = $temp$startOffset;
+									endOffset = $temp$endOffset;
+									continue parseSemicolon;
+								} else {
+									if (first === '\"') {
+										var newPos = endOffset + 1;
+										var _v4 = A4(
+											parseQuotedField,
+											function (c) {
+												return c === ';';
+											},
+											'',
+											newPos,
+											newPos);
+										if (_v4.$ === 'Ok') {
+											var _v5 = _v4.a;
+											var value = _v5.a;
+											var afterQuotedField = _v5.b;
+											var rowEnded = _v5.c;
+											if (_Utils_cmp(afterQuotedField, finalLength) > -1) {
+												return $elm$core$Result$Ok(
+													$elm$core$List$reverse(
+														A2(
+															$elm$core$List$cons,
+															$elm$core$List$reverse(
+																A2($elm$core$List$cons, value, row)),
+															rows)));
+											} else {
+												if (rowEnded) {
+													var $temp$row = _List_Nil,
+														$temp$rows = A2(
+														$elm$core$List$cons,
+														$elm$core$List$reverse(
+															A2($elm$core$List$cons, value, row)),
+														rows),
+														$temp$startOffset = afterQuotedField,
+														$temp$endOffset = afterQuotedField;
+													row = $temp$row;
+													rows = $temp$rows;
+													startOffset = $temp$startOffset;
+													endOffset = $temp$endOffset;
+													continue parseSemicolon;
+												} else {
+													var $temp$row = A2($elm$core$List$cons, value, row),
+														$temp$rows = rows,
+														$temp$startOffset = afterQuotedField,
+														$temp$endOffset = afterQuotedField;
+													row = $temp$row;
+													rows = $temp$rows;
+													startOffset = $temp$startOffset;
+													endOffset = $temp$endOffset;
+													continue parseSemicolon;
+												}
+											}
+										} else {
+											var problem = _v4.a;
+											return $elm$core$Result$Err(
+												problem(
+													$elm$core$List$length(rows) + 1));
+										}
+									} else {
+										var $temp$row = row,
+											$temp$rows = rows,
+											$temp$startOffset = startOffset,
+											$temp$endOffset = endOffset + 1;
+										row = $temp$row;
+										rows = $temp$rows;
+										startOffset = $temp$startOffset;
+										endOffset = $temp$endOffset;
+										continue parseSemicolon;
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		var fieldSeparator = $elm$core$String$fromChar(config.fieldSeparator);
+		return $elm$core$String$isEmpty(source) ? $elm$core$Result$Ok(_List_Nil) : (_Utils_eq(
+			config.fieldSeparator,
+			_Utils_chr(',')) ? A4(parseComma, _List_Nil, _List_Nil, 0, 0) : (_Utils_eq(
+			config.fieldSeparator,
+			_Utils_chr(';')) ? A4(parseSemicolon, _List_Nil, _List_Nil, 0, 0) : A5(
+			parseHelp,
+			function (s) {
+				return _Utils_eq(s, fieldSeparator);
+			},
+			_List_Nil,
+			_List_Nil,
+			0,
+			0)));
+	});
+var $BrianHicks$elm_csv$Csv$Decode$decodeCustom = F4(
+	function (config, fieldNames, decoder, source) {
+		return A2(
+			$elm$core$Result$andThen,
+			A2($BrianHicks$elm_csv$Csv$Decode$applyDecoder, fieldNames, decoder),
+			A2(
+				$elm$core$Result$mapError,
+				$BrianHicks$elm_csv$Csv$Decode$ParsingError,
+				A2($BrianHicks$elm_csv$Csv$Parser$parse, config, source)));
+	});
+var $BrianHicks$elm_csv$Csv$Decode$decodeCsv = $BrianHicks$elm_csv$Csv$Decode$decodeCustom(
+	{
+		fieldSeparator: _Utils_chr(',')
+	});
+var $BrianHicks$elm_csv$Csv$Decode$errorToString = function (error) {
+	switch (error.$) {
+		case 'ParsingError':
+			if (error.a.$ === 'SourceEndedWithoutClosingQuote') {
+				var row = error.a.a;
+				return 'The source ended on row ' + ($elm$core$String$fromInt(row) + ' in a quoted field without a closing quote.');
+			} else {
+				var row = error.a.a;
+				return 'On row ' + ($elm$core$String$fromInt(row) + ' in the source, there were additional characters in a field after a closing quote.');
+			}
+		case 'NoFieldNamesOnFirstRow':
+			return 'I expected to see field names on the first row, but there were none.';
+		default:
+			var errs = error.a;
+			var rowAndColumnString = function (err) {
+				return 'row ' + ($elm$core$String$fromInt(err.row) + (', ' + function () {
+					var _v4 = err.column;
+					switch (_v4.$) {
+						case 'Column':
+							var col = _v4.a;
+							return 'column ' + $elm$core$String$fromInt(col);
+						case 'Field':
+							if (_v4.b.$ === 'Nothing') {
+								var name = _v4.a;
+								var _v5 = _v4.b;
+								return 'in the `' + (name + '` field');
+							} else {
+								var name = _v4.a;
+								var col = _v4.b.a;
+								return 'in the `' + (name + ('` field (column ' + ($elm$core$String$fromInt(col) + ')')));
+							}
+						default:
+							return 'column 0 (the only column present)';
+					}
+				}()));
+			};
+			var problemString = function (problem) {
+				switch (problem.$) {
+					case 'ColumnNotFound':
+						var i = problem.a;
+						return 'I couldn\'t find column #' + ($elm$core$String$fromInt(i) + '.');
+					case 'FieldNotFound':
+						var name = problem.a;
+						return 'I couldn\'t find the `' + (name + '` column.');
+					case 'FieldNotProvided':
+						var name = problem.a;
+						return 'The `' + (name + '` field wasn\'t provided in the field names.');
+					case 'ExpectedOneColumn':
+						var howMany = problem.a;
+						return 'I expected exactly one column, but there were ' + ($elm$core$String$fromInt(howMany) + '.');
+					case 'ExpectedInt':
+						var notInt = problem.a;
+						return 'I could not parse an int from `' + (notInt + '`.');
+					case 'ExpectedFloat':
+						var notFloat = problem.a;
+						return 'I could not parse a float from `' + (notFloat + '`.');
+					default:
+						var custom = problem.a;
+						return custom;
+				}
+			};
+			var errString = function (err) {
+				var _v2 = A2($elm$core$List$map, problemString, err.problems);
+				if (!_v2.b) {
+					return 'There was an internal error while generating an error on ' + (rowAndColumnString(err) + ' and I don\'t have any info about what went wrong. Please open an issue!');
+				} else {
+					if (!_v2.b.b) {
+						var only = _v2.a;
+						return 'There was a problem on ' + (rowAndColumnString(err) + (': ' + only));
+					} else {
+						var many = _v2;
+						return 'There were some problems on ' + (rowAndColumnString(err) + (':\n\n' + A2(
+							$elm$core$String$join,
+							'\n',
+							A2(
+								$elm$core$List$map,
+								function (problem) {
+									return ' - ' + problem;
+								},
+								many))));
+					}
+				}
+			};
+			if (!errs.b) {
+				return 'Something went wrong, but I got an blank error list so I don\'t know what it was. Please open an issue!';
+			} else {
+				if (!errs.b.b) {
+					var only = errs.a;
+					return errString(only);
+				} else {
+					var many = errs;
+					return 'I saw ' + ($elm$core$String$fromInt(
+						$elm$core$List$length(many)) + (' problems while decoding this CSV:\n\n' + A2(
+						$elm$core$String$join,
+						'\n\n',
+						A2($elm$core$List$map, errString, errs))));
+				}
+			}
+	}
+};
+var $author$project$Main$EventRow = F6(
+	function (title, name, start, end, venue, link) {
+		return {end: end, link: link, name: name, start: start, title: title, venue: venue};
+	});
+var $BrianHicks$elm_csv$Csv$Decode$Decoder = function (a) {
+	return {$: 'Decoder', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$Field_ = function (a) {
+	return {$: 'Field_', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$field = F2(
+	function (name, _v0) {
+		var decoder = _v0.a;
+		return $BrianHicks$elm_csv$Csv$Decode$Decoder(
+			F3(
+				function (_v1, fieldNames, row) {
+					return A3(
+						decoder,
+						$BrianHicks$elm_csv$Csv$Decode$Field_(name),
+						fieldNames,
+						row);
+				}));
+	});
+var $BrianHicks$elm_csv$Csv$Decode$succeed = function (value) {
+	return $BrianHicks$elm_csv$Csv$Decode$Decoder(
+		F4(
+			function (_v0, _v1, _v2, _v3) {
+				return $elm$core$Result$Ok(value);
+			}));
+};
+var $BrianHicks$elm_csv$Csv$Decode$into = $BrianHicks$elm_csv$Csv$Decode$succeed;
+var $elm$core$Result$map2 = F3(
+	function (func, ra, rb) {
+		if (ra.$ === 'Err') {
+			var x = ra.a;
+			return $elm$core$Result$Err(x);
+		} else {
+			var a = ra.a;
+			if (rb.$ === 'Err') {
+				var x = rb.a;
+				return $elm$core$Result$Err(x);
+			} else {
+				var b = rb.a;
+				return $elm$core$Result$Ok(
+					A2(func, a, b));
+			}
+		}
+	});
+var $BrianHicks$elm_csv$Csv$Decode$map2 = F3(
+	function (transform, _v0, _v1) {
+		var decodeA = _v0.a;
+		var decodeB = _v1.a;
+		return $BrianHicks$elm_csv$Csv$Decode$Decoder(
+			F4(
+				function (location, fieldNames, rowNum, row) {
+					return A3(
+						$elm$core$Result$map2,
+						transform,
+						A4(decodeA, location, fieldNames, rowNum, row),
+						A4(decodeB, location, fieldNames, rowNum, row));
+				}));
+	});
+var $BrianHicks$elm_csv$Csv$Decode$pipeline = $BrianHicks$elm_csv$Csv$Decode$map2(
+	F2(
+		function (value, fn) {
+			return fn(value);
+		}));
+var $BrianHicks$elm_csv$Csv$Decode$ColumnNotFound = function (a) {
+	return {$: 'ColumnNotFound', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$ExpectedOneColumn = function (a) {
+	return {$: 'ExpectedOneColumn', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$FieldNotFound = function (a) {
+	return {$: 'FieldNotFound', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$FieldNotProvided = function (a) {
+	return {$: 'FieldNotProvided', a: a};
+};
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $elm$core$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
+				switch (_v1.$) {
+					case 'LT':
+						var $temp$targetKey = targetKey,
+							$temp$dict = left;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					case 'EQ':
+						return $elm$core$Maybe$Just(value);
+					default:
+						var $temp$targetKey = targetKey,
+							$temp$dict = right;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+				}
+			}
+		}
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $BrianHicks$elm_csv$Csv$Decode$Column = function (a) {
+	return {$: 'Column', a: a};
+};
+var $BrianHicks$elm_csv$Csv$Decode$Field = F2(
+	function (a, b) {
+		return {$: 'Field', a: a, b: b};
+	});
+var $BrianHicks$elm_csv$Csv$Decode$OnlyColumn = {$: 'OnlyColumn'};
+var $BrianHicks$elm_csv$Csv$Decode$locationToColumn = F2(
+	function (fieldNames, location) {
+		switch (location.$) {
+			case 'Column_':
+				var i = location.a;
+				return $BrianHicks$elm_csv$Csv$Decode$Column(i);
+			case 'Field_':
+				var name = location.a;
+				return A2(
+					$BrianHicks$elm_csv$Csv$Decode$Field,
+					name,
+					A2($elm$core$Dict$get, name, fieldNames));
+			default:
+				return $BrianHicks$elm_csv$Csv$Decode$OnlyColumn;
+		}
+	});
+var $BrianHicks$elm_csv$Csv$Decode$fromString = function (convert) {
+	return $BrianHicks$elm_csv$Csv$Decode$Decoder(
+		F4(
+			function (location, fieldNames, rowNum, row) {
+				switch (location.$) {
+					case 'Column_':
+						var colNum = location.a;
+						var _v1 = $elm$core$List$head(
+							A2($elm$core$List$drop, colNum, row));
+						if (_v1.$ === 'Just') {
+							var value = _v1.a;
+							var _v2 = convert(value);
+							if (_v2.$ === 'Ok') {
+								var converted = _v2.a;
+								return $elm$core$Result$Ok(converted);
+							} else {
+								var problem = _v2.a;
+								return $elm$core$Result$Err(
+									{
+										column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+										problems: _List_fromArray(
+											[problem]),
+										row: rowNum
+									});
+							}
+						} else {
+							return $elm$core$Result$Err(
+								{
+									column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+									problems: _List_fromArray(
+										[
+											$BrianHicks$elm_csv$Csv$Decode$ColumnNotFound(colNum)
+										]),
+									row: rowNum
+								});
+						}
+					case 'Field_':
+						var name = location.a;
+						var _v3 = A2($elm$core$Dict$get, name, fieldNames);
+						if (_v3.$ === 'Just') {
+							var colNum = _v3.a;
+							var _v4 = $elm$core$List$head(
+								A2($elm$core$List$drop, colNum, row));
+							if (_v4.$ === 'Just') {
+								var value = _v4.a;
+								var _v5 = convert(value);
+								if (_v5.$ === 'Ok') {
+									var converted = _v5.a;
+									return $elm$core$Result$Ok(converted);
+								} else {
+									var problem = _v5.a;
+									return $elm$core$Result$Err(
+										{
+											column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+											problems: _List_fromArray(
+												[problem]),
+											row: rowNum
+										});
+								}
+							} else {
+								return $elm$core$Result$Err(
+									{
+										column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+										problems: _List_fromArray(
+											[
+												$BrianHicks$elm_csv$Csv$Decode$FieldNotFound(name)
+											]),
+										row: rowNum
+									});
+							}
+						} else {
+							return $elm$core$Result$Err(
+								{
+									column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+									problems: _List_fromArray(
+										[
+											$BrianHicks$elm_csv$Csv$Decode$FieldNotProvided(name)
+										]),
+									row: rowNum
+								});
+						}
+					default:
+						if (!row.b) {
+							return $elm$core$Result$Err(
+								{
+									column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+									problems: _List_fromArray(
+										[
+											$BrianHicks$elm_csv$Csv$Decode$ColumnNotFound(0)
+										]),
+									row: rowNum
+								});
+						} else {
+							if (!row.b.b) {
+								var only = row.a;
+								var _v7 = convert(only);
+								if (_v7.$ === 'Ok') {
+									var converted = _v7.a;
+									return $elm$core$Result$Ok(converted);
+								} else {
+									var problem = _v7.a;
+									return $elm$core$Result$Err(
+										{
+											column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+											problems: _List_fromArray(
+												[problem]),
+											row: rowNum
+										});
+								}
+							} else {
+								return $elm$core$Result$Err(
+									{
+										column: A2($BrianHicks$elm_csv$Csv$Decode$locationToColumn, fieldNames, location),
+										problems: _List_fromArray(
+											[
+												$BrianHicks$elm_csv$Csv$Decode$ExpectedOneColumn(
+												$elm$core$List$length(row))
+											]),
+										row: rowNum
+									});
+							}
+						}
+				}
+			}));
+};
+var $BrianHicks$elm_csv$Csv$Decode$string = $BrianHicks$elm_csv$Csv$Decode$fromString($elm$core$Result$Ok);
+var $author$project$Main$eventDecoder = A2(
+	$BrianHicks$elm_csv$Csv$Decode$pipeline,
+	A2($BrianHicks$elm_csv$Csv$Decode$field, 'link', $BrianHicks$elm_csv$Csv$Decode$string),
+	A2(
+		$BrianHicks$elm_csv$Csv$Decode$pipeline,
+		A2($BrianHicks$elm_csv$Csv$Decode$field, 'venue', $BrianHicks$elm_csv$Csv$Decode$string),
+		A2(
+			$BrianHicks$elm_csv$Csv$Decode$pipeline,
+			A2($BrianHicks$elm_csv$Csv$Decode$field, 'end', $BrianHicks$elm_csv$Csv$Decode$string),
+			A2(
+				$BrianHicks$elm_csv$Csv$Decode$pipeline,
+				A2($BrianHicks$elm_csv$Csv$Decode$field, 'start', $BrianHicks$elm_csv$Csv$Decode$string),
+				A2(
+					$BrianHicks$elm_csv$Csv$Decode$pipeline,
+					A2($BrianHicks$elm_csv$Csv$Decode$field, 'name', $BrianHicks$elm_csv$Csv$Decode$string),
+					A2(
+						$BrianHicks$elm_csv$Csv$Decode$pipeline,
+						A2($BrianHicks$elm_csv$Csv$Decode$field, 'title', $BrianHicks$elm_csv$Csv$Decode$string),
+						$BrianHicks$elm_csv$Csv$Decode$into($author$project$Main$EventRow)))))));
 var $elm$core$String$replace = F3(
 	function (before, after, string) {
 		return A2(
@@ -5836,7 +7027,7 @@ var $author$project$Main$toTime = function (time) {
 	return A2(
 		$elm$core$Result$mapError,
 		function (_v0) {
-			return 'I was trying to parse a time value for the input\'' + (time + '\' but I got stuck.');
+			return 'I was trying to parse a time value for the input \'' + (time + '\' but I got stuck.');
 		},
 		A2(
 			$elm$parser$Parser$run,
@@ -5844,60 +7035,52 @@ var $author$project$Main$toTime = function (time) {
 			$elm$core$String$toUpper(
 				A3($elm$core$String$replace, ' ', '', time))));
 };
-var $author$project$Main$toEvent = function (row) {
-	var _v0 = A2($elm$core$String$split, ',', row);
-	if ((((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && _v0.b.b.b.b.b) && _v0.b.b.b.b.b.b) && (!_v0.b.b.b.b.b.b.b)) {
-		var title = _v0.a;
-		var _v1 = _v0.b;
-		var name = _v1.a;
-		var _v2 = _v1.b;
-		var start = _v2.a;
-		var _v3 = _v2.b;
-		var end = _v3.a;
-		var _v4 = _v3.b;
-		var venue = _v4.a;
-		var _v5 = _v4.b;
-		var link = _v5.a;
-		return A2(
-			$elm$core$Result$andThen,
-			function (s) {
-				return A2(
-					$elm$core$Result$andThen,
-					function (e) {
-						return $elm$core$Result$Ok(
-							{end: e, link: link, name: name, start: s, title: title, venue: venue});
-					},
-					$author$project$Main$toTime(end));
-			},
-			$author$project$Main$toTime(start));
-	} else {
-		return $elm$core$Result$Err('I was expecting 6 comma separated values but got \'' + (row + '\' instead'));
-	}
+var $author$project$Main$eventRowToRow = function (row) {
+	return A2(
+		$elm$core$Result$andThen,
+		function (s) {
+			return A2(
+				$elm$core$Result$andThen,
+				function (e) {
+					return $elm$core$Result$Ok(
+						{end: e, link: row.link, name: row.name, start: s, title: row.title, venue: row.venue});
+				},
+				$author$project$Main$toTime(row.end));
+		},
+		$author$project$Main$toTime(row.start));
 };
-var $author$project$Main$generateHelper = F2(
+var $author$project$Main$process = F2(
 	function (events, rows) {
 		if (!rows.b) {
 			return $elm$core$Result$Ok(events);
 		} else {
-			var row = rows.a;
-			var rest = rows.b;
+			var r = rows.a;
+			var rs = rows.b;
 			return A2(
 				$elm$core$Result$andThen,
-				function (event) {
+				function (e) {
 					return A2(
-						$author$project$Main$generateHelper,
-						A2($elm$core$List$cons, event, events),
-						rest);
+						$author$project$Main$process,
+						A2($elm$core$List$cons, e, events),
+						rs);
 				},
-				$author$project$Main$toEvent(row));
+				$author$project$Main$eventRowToRow(r));
 		}
 	});
-var $elm$core$String$lines = _String_lines;
-var $author$project$Main$generate = function (input) {
+var $author$project$Main$parseRows = function (rows) {
 	return A2(
-		$author$project$Main$generateHelper,
-		_List_Nil,
-		$elm$core$String$lines(input));
+		$elm$core$Result$andThen,
+		$author$project$Main$process(_List_Nil),
+		A2(
+			$elm$core$Result$mapError,
+			$BrianHicks$elm_csv$Csv$Decode$errorToString,
+			A3(
+				$BrianHicks$elm_csv$Csv$Decode$decodeCsv,
+				$BrianHicks$elm_csv$Csv$Decode$CustomFieldNames(
+					_List_fromArray(
+						['title', 'name', 'start', 'end', 'venue', 'link'])),
+				$author$project$Main$eventDecoder,
+				rows)));
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5916,7 +7099,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							schedule: $author$project$Main$generate(model.csv)
+							schedule: $author$project$Main$parseRows(model.csv)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -6118,8 +7301,6 @@ var $elm$core$Basics$composeR = F3(
 		return g(
 			f(x));
 	});
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
 		if (maybe.$ === 'Just') {
@@ -6128,146 +7309,6 @@ var $elm$core$Maybe$map = F2(
 				f(value));
 		} else {
 			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$core$Basics$compare = _Utils_compare;
-var $elm$core$Dict$get = F2(
-	function (targetKey, dict) {
-		get:
-		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
-						var $temp$targetKey = targetKey,
-							$temp$dict = left;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-					case 'EQ':
-						return $elm$core$Maybe$Just(value);
-					default:
-						var $temp$targetKey = targetKey,
-							$temp$dict = right;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-				}
-			}
-		}
-	});
-var $elm$core$Dict$Black = {$: 'Black'};
-var $elm$core$Dict$RBNode_elm_builtin = F5(
-	function (a, b, c, d, e) {
-		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
-	});
-var $elm$core$Dict$Red = {$: 'Red'};
-var $elm$core$Dict$balance = F5(
-	function (color, key, value, left, right) {
-		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
-			var _v1 = right.a;
-			var rK = right.b;
-			var rV = right.c;
-			var rLeft = right.d;
-			var rRight = right.e;
-			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
-				var _v3 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var lLeft = left.d;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
-					key,
-					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
-			} else {
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					color,
-					rK,
-					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
-					rRight);
-			}
-		} else {
-			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
-				var _v5 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var _v6 = left.d;
-				var _v7 = _v6.a;
-				var llK = _v6.b;
-				var llV = _v6.c;
-				var llLeft = _v6.d;
-				var llRight = _v6.e;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
-					lK,
-					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
-			} else {
-				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
-			}
-		}
-	});
-var $elm$core$Dict$insertHelp = F3(
-	function (key, value, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-		} else {
-			var nColor = dict.a;
-			var nKey = dict.b;
-			var nValue = dict.c;
-			var nLeft = dict.d;
-			var nRight = dict.e;
-			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						A3($elm$core$Dict$insertHelp, key, value, nLeft),
-						nRight);
-				case 'EQ':
-					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
-				default:
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						nLeft,
-						A3($elm$core$Dict$insertHelp, key, value, nRight));
-			}
-		}
-	});
-var $elm$core$Dict$insert = F3(
-	function (key, value, dict) {
-		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
-			var _v1 = _v0.a;
-			var k = _v0.b;
-			var v = _v0.c;
-			var l = _v0.d;
-			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
-		} else {
-			var x = _v0;
-			return x;
 		}
 	});
 var $elm$core$Dict$getMin = function (dict) {

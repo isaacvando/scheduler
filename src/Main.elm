@@ -43,6 +43,21 @@ type alias Event =
     }
 
 
+
+-- EventRow is used to represent a row of the CSV file. It would be nice to decode the CSV directly into the Event type
+-- but I'm not sure of a good way to do this while preserving error messages
+
+
+type alias EventRow =
+    { title : String
+    , name : String
+    , start : String
+    , end : String
+    , venue : String
+    , link : String
+    }
+
+
 type Time
     = Time Int Int AmPm
 
@@ -77,60 +92,56 @@ update msg model =
             ( { model | csv = csv }, Cmd.none )
 
         GenerateSchedule ->
-            ( { model | schedule = generate model.csv }, Cmd.none )
+            ( { model | schedule = parseRows model.csv }, Cmd.none )
 
 
-generate : String -> Result String (List Event)
-generate input =
-    String.lines input
-        |> generateHelper []
-
-
-generateHelper : List Event -> List String -> Result String (List Event)
-generateHelper events rows =
-    case rows of
-        [] ->
-            Ok events
-
-        row :: rest ->
-            toEvent row |> Result.andThen (\event -> generateHelper (event :: events) rest)
-
-
-eventDecoder : Decoder Event
+eventDecoder : Decoder EventRow
 eventDecoder =
-    Csv.into Event
+    Csv.into EventRow
         |> Csv.pipeline (Csv.field "title" Csv.string)
         |> Csv.pipeline (Csv.field "name" Csv.string)
-        |> Csv.pipeline (Csv.map (\x -> toTime x |> Result.withDefault (Time 0 0 AM)) (Csv.field "start" Csv.string))
-        |> Csv.pipeline (Csv.map (\x -> toTime x |> Result.withDefault (Time 0 0 AM)) (Csv.field "end" Csv.string))
+        |> Csv.pipeline (Csv.field "start" Csv.string)
+        |> Csv.pipeline (Csv.field "end" Csv.string)
         |> Csv.pipeline (Csv.field "venue" Csv.string)
         |> Csv.pipeline (Csv.field "link" Csv.string)
 
 
-toEvent : String -> Result String Event
-toEvent row =
-    case String.split "," row of
-        [ title, name, start, end, venue, link ] ->
-            toTime start
-                |> Result.andThen
-                    (\s ->
-                        toTime end
-                            |> Result.andThen
-                                (\e ->
-                                    Ok
-                                        { title =
-                                            title
-                                        , name = name
-                                        , start = s
-                                        , end = e
-                                        , venue = venue
-                                        , link = link
-                                        }
-                                )
-                    )
+parseRows : String -> Result String (List Event)
+parseRows rows =
+    rows
+        |> Csv.decodeCsv (Csv.CustomFieldNames [ "title", "name", "start", "end", "venue", "link" ]) eventDecoder
+        |> Result.mapError Csv.errorToString
+        |> Result.andThen (process [])
 
-        _ ->
-            Err <| "I was expecting 6 comma separated values but got '" ++ row ++ "' instead"
+
+process : List Event -> List EventRow -> Result String (List Event)
+process events rows =
+    case rows of
+        [] ->
+            Ok events
+
+        r :: rs ->
+            eventRowToRow r |> Result.andThen (\e -> process (e :: events) rs)
+
+
+eventRowToRow : EventRow -> Result String Event
+eventRowToRow row =
+    toTime row.start
+        |> Result.andThen
+            (\s ->
+                toTime row.end
+                    |> Result.andThen
+                        (\e ->
+                            Ok
+                                { title = row.title
+                                , name = row.name
+                                , start = s
+                                , end = e
+                                , venue = row.venue
+                                , link = row.link
+                                }
+                        )
+            )
 
 
 toTime : String -> Result String Time
@@ -139,7 +150,7 @@ toTime time =
         |> String.replace " " ""
         |> String.toUpper
         |> Parser.run timeParser
-        |> Result.mapError (\_ -> "I was trying to parse a time value for the input'" ++ time ++ "' but I got stuck.")
+        |> Result.mapError (\_ -> "I was trying to parse a time value for the input '" ++ time ++ "' but I got stuck.")
 
 
 timeParser : Parser.Parser Time
