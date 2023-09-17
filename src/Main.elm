@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser
+import Csv.Decode as Csv exposing (Decoder)
 import Dict
 import Dict.Extra as Dict
 import Html exposing (..)
@@ -93,6 +94,17 @@ generateHelper events rows =
 
         row :: rest ->
             toEvent row |> Result.andThen (\event -> generateHelper (event :: events) rest)
+
+
+eventDecoder : Decoder Event
+eventDecoder =
+    Csv.into Event
+        |> Csv.pipeline (Csv.field "title" Csv.string)
+        |> Csv.pipeline (Csv.field "name" Csv.string)
+        |> Csv.pipeline (Csv.map (\x -> toTime x |> Result.withDefault (Time 0 0 AM)) (Csv.field "start" Csv.string))
+        |> Csv.pipeline (Csv.map (\x -> toTime x |> Result.withDefault (Time 0 0 AM)) (Csv.field "end" Csv.string))
+        |> Csv.pipeline (Csv.field "venue" Csv.string)
+        |> Csv.pipeline (Csv.field "link" Csv.string)
 
 
 toEvent : String -> Result String Event
@@ -244,8 +256,8 @@ viewColumn startTime totalTime ( title, events ) =
         [ text title
         , hr
             [ style "background-color" "black"
-            , style "border-style" "solid"
-            , style "border-width" "0.5px"
+            , style "border-style" "none"
+            , style "height" "1px"
             ]
             []
         , viewEvents startTime totalTime events
@@ -267,7 +279,7 @@ viewEvent startTime event =
         [ class "event"
         , style "width" width
         , style "box-sizing" "border-box"
-        , style "background-color" "#ADD8E6"
+        , style "background-color" "#E5CFF7"
         , style "padding" "5px"
         , style "border" "1px solid black"
         , style "border-radius" "5px"

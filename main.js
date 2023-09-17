@@ -6703,7 +6703,7 @@ var $author$project$Main$viewEvent = F2(
 					$elm$html$Html$Attributes$class('event'),
 					A2($elm$html$Html$Attributes$style, 'width', $author$project$Main$width),
 					A2($elm$html$Html$Attributes$style, 'box-sizing', 'border-box'),
-					A2($elm$html$Html$Attributes$style, 'background-color', '#ADD8E6'),
+					A2($elm$html$Html$Attributes$style, 'background-color', '#E5CFF7'),
 					A2($elm$html$Html$Attributes$style, 'padding', '5px'),
 					A2($elm$html$Html$Attributes$style, 'border', '1px solid black'),
 					A2($elm$html$Html$Attributes$style, 'border-radius', '5px'),
@@ -6787,8 +6787,8 @@ var $author$project$Main$viewColumn = F3(
 					_List_fromArray(
 						[
 							A2($elm$html$Html$Attributes$style, 'background-color', 'black'),
-							A2($elm$html$Html$Attributes$style, 'border-style', 'solid'),
-							A2($elm$html$Html$Attributes$style, 'border-width', '0.5px')
+							A2($elm$html$Html$Attributes$style, 'border-style', 'none'),
+							A2($elm$html$Html$Attributes$style, 'height', '1px')
 						]),
 					_List_Nil),
 					A3($author$project$Main$viewEvents, startTime, totalTime, events)
