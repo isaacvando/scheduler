@@ -5298,16 +5298,14 @@ var $author$project$Main$init = function (_v0) {
 				$elm$core$String$join,
 				'\n',
 				_List_fromArray(
-					['How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com', 'The Effects of Excessive Tomato Consumption,jeff bob,3:00PM,3:45PM,Room B,https://example.com', 'I love waking up early,jeff bob,11:00AM,1:25PM,Room C,https://example.com', 'Another one,jeff bob,12:00AM,1:25PM,Room B,https://example.com'])),
+					['title,name,start,end,venue,link', 'How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com', 'The Effects of Excessive Tomato Consumption,jeff bob,3:00PM,3:45PM,Room B,https://example.com', 'I love waking up early,jeff bob,11:00AM,1:25PM,Room C,https://example.com', 'Another one,jeff bob,12:00AM,1:25PM,Room B,https://example.com'])),
 			schedule: $elm$core$Result$Ok(_List_Nil)
 		},
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $BrianHicks$elm_csv$Csv$Decode$CustomFieldNames = function (a) {
-	return {$: 'CustomFieldNames', a: a};
-};
+var $BrianHicks$elm_csv$Csv$Decode$FieldNamesFromFirstRow = {$: 'FieldNamesFromFirstRow'};
 var $elm$core$Result$andThen = F2(
 	function (callback, result) {
 		if (result.$ === 'Ok') {
@@ -7074,13 +7072,7 @@ var $author$project$Main$parseRows = function (rows) {
 		A2(
 			$elm$core$Result$mapError,
 			$BrianHicks$elm_csv$Csv$Decode$errorToString,
-			A3(
-				$BrianHicks$elm_csv$Csv$Decode$decodeCsv,
-				$BrianHicks$elm_csv$Csv$Decode$CustomFieldNames(
-					_List_fromArray(
-						['title', 'name', 'start', 'end', 'venue', 'link'])),
-				$author$project$Main$eventDecoder,
-				rows)));
+			A3($BrianHicks$elm_csv$Csv$Decode$decodeCsv, $BrianHicks$elm_csv$Csv$Decode$FieldNamesFromFirstRow, $author$project$Main$eventDecoder, rows)));
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -7209,7 +7201,7 @@ var $author$project$Main$viewForm = function (model) {
 						$elm$html$Html$Attributes$rows(15),
 						$elm$html$Html$Attributes$cols(70),
 						A2($elm$html$Html$Attributes$style, 'display', 'block'),
-						$elm$html$Html$Attributes$placeholder('How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM'),
+						$elm$html$Html$Attributes$placeholder('How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A,https://example.com\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room A,https://example.com'),
 						$elm$html$Html$Events$onInput($author$project$Main$Csv),
 						$elm$html$Html$Attributes$value(model.csv)
 					]),
@@ -7766,7 +7758,8 @@ var $author$project$Main$viewEvent = F2(
 					$elm$core$String$fromInt(
 						$author$project$Main$scale(
 							$author$project$Main$toMinutes(event.end) - $author$project$Main$toMinutes(event.start)))),
-					$elm$html$Html$Attributes$href(event.link)
+					$elm$html$Html$Attributes$href(
+					(event.link === '') ? '#' : event.link)
 				]),
 			_List_fromArray(
 				[
@@ -7898,7 +7891,6 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						A2($elm$html$Html$Attributes$style, 'font-face', 'sans-serif'),
-						A2($elm$html$Html$Attributes$style, 'margin-left', '20px'),
 						A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 						A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
 						A2($elm$html$Html$Attributes$style, 'flex-direction', 'column')

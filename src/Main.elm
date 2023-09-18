@@ -71,7 +71,8 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { csv =
             String.join "\n"
-                [ "How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com"
+                [ "title,name,start,end,venue,link"
+                , "How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com"
                 , "The Effects of Excessive Tomato Consumption,jeff bob,3:00PM,3:45PM,Room B,https://example.com"
                 , "I love waking up early,jeff bob,11:00AM,1:25PM,Room C,https://example.com"
                 , "Another one,jeff bob,12:00AM,1:25PM,Room B,https://example.com"
@@ -109,7 +110,7 @@ eventDecoder =
 parseRows : String -> Result String (List Event)
 parseRows rows =
     rows
-        |> Csv.decodeCsv (Csv.CustomFieldNames [ "title", "name", "start", "end", "venue", "link" ]) eventDecoder
+        |> Csv.decodeCsv Csv.FieldNamesFromFirstRow eventDecoder
         |> Result.mapError Csv.errorToString
         |> Result.andThen (process [])
 
@@ -182,7 +183,6 @@ view model =
     , body =
         [ div
             [ style "font-face" "sans-serif"
-            , style "margin-left" "20px"
             , style "display" "flex"
             , style "align-items" "center"
             , style "flex-direction" "column"
@@ -203,7 +203,7 @@ viewForm model =
             [ rows 15
             , cols 70
             , style "display" "block"
-            , placeholder "How to Grow a Flavorful Tomato,2:00PM,2:55PM\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM"
+            , placeholder "How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A,https://example.com\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room A,https://example.com"
             , onInput Csv
             , value model.csv
             ]
@@ -302,7 +302,13 @@ viewEvent startTime event =
         , style "color" "black"
         , toMinutes event.start - startTime |> scale |> String.fromInt |> style "top"
         , toMinutes event.end - toMinutes event.start |> scale |> String.fromInt |> style "height"
-        , href event.link
+        , (if event.link == "" then
+            "#"
+
+           else
+            event.link
+          )
+            |> href
         ]
         [ div []
             [ i [ style "margin" "0px" ] [ text event.title ]
