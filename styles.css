@@ -1,18 +1,43 @@
 .column:before {
-  background-color: black;
+  background-color: #ccc;
   content: "";
   position: absolute;
   top: 0;
   bottom: 0;
   width: 1px;
-  background-color: black;
-  margin-left: -7px;
+  margin-left: -3px;
 }
 
 .column:first-child::before {
   display: none;
 }
 
-.event:hover {
-  background-color: #9D76C1 !important;
+.event {
+  box-sizing: border-box;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 12px;
+  position: absolute;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: #ccc;
+  background-color: #111 !important;
+}
+
+.rule {
+  background-color: #ccc;
+  border-style: none;
+  height: 1px;
+}
+
+.schedule {
+  padding: 3px;
+  gap: 6px;
+  position: relative;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  display: grid;
 }

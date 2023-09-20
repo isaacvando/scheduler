@@ -127,6 +127,10 @@ process events rows =
 
 eventRowToRow : EventRow -> Result String Event
 eventRowToRow row =
+    let
+        x =
+            Debug.log "event row" row
+    in
     toTime row.start
         |> Result.andThen
             (\s ->
@@ -232,14 +236,10 @@ viewSchedule events =
                         |> Dict.toList
             in
             div
-                [ style "border" "1px solid black"
-                , style "border-radius" "10"
-                , class "schedule"
-                , style "display" "grid"
-                , style "grid-template-columns" (List.map (const width) grouped |> String.join " ")
-                , style "gap" "14px"
-                , style "padding" "7px"
-                , style "position" "relative"
+                [ class "schedule"
+                , List.map (const width) grouped
+                    |> String.join " "
+                    |> style "grid-template-columns"
                 ]
                 (List.map (viewColumn startTime (getTotalTime es)) grouped)
 
@@ -266,9 +266,7 @@ viewColumn startTime totalTime ( title, events ) =
         ]
         [ text title
         , hr
-            [ style "background-color" "black"
-            , style "border-style" "none"
-            , style "height" "1px"
+            [ class "rule"
             ]
             []
         , viewEvents startTime totalTime events
@@ -289,17 +287,6 @@ viewEvent startTime event =
     a
         [ class "event"
         , style "width" width
-        , style "box-sizing" "border-box"
-        , style "background-color" "#E5CFF7"
-        , style "padding" "5px"
-        , style "border" "1px solid black"
-        , style "border-radius" "5px"
-        , style "font-size" "12px"
-        , style "position" "absolute"
-        , style "display" "grid"
-        , style "place-items" "center"
-        , style "text-decoration" "none"
-        , style "color" "black"
         , toMinutes event.start - startTime |> scale |> String.fromInt |> style "top"
         , toMinutes event.end - toMinutes event.start |> scale |> String.fromInt |> style "height"
         , (if event.link == "" then
@@ -311,9 +298,8 @@ viewEvent startTime event =
             |> href
         ]
         [ div []
-            [ i [ style "margin" "0px" ] [ text event.title ]
-            , br [] []
-            , text event.name
+            [ i [ style "margin" "0px" ] [ text <| event.title ]
+            , text <| " - " ++ event.name
             , br [] []
             , text <| viewTime event.start ++ " - " ++ viewTime event.end
             ]
@@ -322,12 +308,20 @@ viewEvent startTime event =
 
 scale : Int -> Int
 scale x =
-    toFloat x * 1.4 |> ceiling
+    let
+        y =
+            toFloat x * 2.5 |> ceiling
+    in
+    if modBy 2 y == 0 then
+        y
+
+    else
+        y + 1
 
 
 width : String
 width =
-    "140px"
+    "165px"
 
 
 toMinutes : Time -> Int
@@ -335,7 +329,7 @@ toMinutes (Time hour minute amPm) =
     60
         * hour
         + minute
-        + (if amPm == PM then
+        + (if amPm == PM && hour /= 12 then
             12 * 60
 
            else
