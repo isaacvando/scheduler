@@ -1,4 +1,4 @@
-module Main exposing (..)
+module Main exposing (main)
 
 import Browser
 import Csv.Decode as Csv exposing (Decoder)
@@ -8,7 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List
-import Parser exposing ((|.), (|=), int)
+import Parser exposing ((|.), (|=))
 
 
 main : Program () Model Msg
@@ -28,8 +28,7 @@ type alias Model =
 
 
 type Msg
-    = NoOp
-    | GenerateSchedule
+    = GenerateSchedule
     | Csv String
 
 
@@ -72,10 +71,8 @@ init _ =
     ( { csv =
             String.join "\n"
                 [ "title,name,start,end,venue,link"
-                , "How to Grow a Flavorful Tomato,jeff bob,2:00PM,2:55PM,Room A,https://example.com"
-                , "The Effects of Excessive Tomato Consumption,jeff bob,3:00PM,3:45PM,Room B,https://example.com"
-                , "I love waking up early,jeff bob,11:00AM,1:25PM,Room C,https://example.com"
-                , "Another one,jeff bob,12:00AM,1:25PM,Room B,https://example.com"
+                , "How to Grow a Flavorful Tomato,Jane Tomatoson,2:00PM,2:55PM,Room A,https://example.com"
+                , "The Effects of Excessive Tomato Consumption,Heirloom Harry,2:30PM,3:45PM,Room B,https://example.com"
                 ]
       , schedule = Ok []
       }
@@ -86,9 +83,6 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
-
         Csv csv ->
             ( { model | csv = csv }, Cmd.none )
 
@@ -112,25 +106,21 @@ parseRows rows =
     rows
         |> Csv.decodeCsv Csv.FieldNamesFromFirstRow eventDecoder
         |> Result.mapError Csv.errorToString
-        |> Result.andThen (process [])
+        |> Result.andThen (parseRowsHelper [])
 
 
-process : List Event -> List EventRow -> Result String (List Event)
-process events rows =
+parseRowsHelper : List Event -> List EventRow -> Result String (List Event)
+parseRowsHelper events rows =
     case rows of
         [] ->
             Ok events
 
         r :: rs ->
-            eventRowToRow r |> Result.andThen (\e -> process (e :: events) rs)
+            eventRowToRow r |> Result.andThen (\e -> parseRowsHelper (e :: events) rs)
 
 
 eventRowToRow : EventRow -> Result String Event
 eventRowToRow row =
-    let
-        x =
-            Debug.log "event row" row
-    in
     toTime row.start
         |> Result.andThen
             (\s ->
@@ -207,7 +197,6 @@ viewForm model =
             [ rows 15
             , cols 70
             , style "display" "block"
-            , placeholder "How to Grow a Flavorful Tomato,2:00PM,2:55PM,Room A,https://example.com\nThe Effects of Excessive Tomato Consumption,3:00PM,3:45PM,Room A,https://example.com"
             , onInput Csv
             , value model.csv
             ]
@@ -221,6 +210,9 @@ viewSchedule events =
     case events of
         Err error ->
             text <| "There was an error generating the schedule: " ++ error
+
+        Ok [] ->
+            text ""
 
         Ok es ->
             let
@@ -237,7 +229,7 @@ viewSchedule events =
             in
             div
                 [ class "schedule"
-                , List.map (const width) grouped
+                , List.map (\_ -> width) grouped
                     |> String.join " "
                     |> style "grid-template-columns"
                 ]
@@ -359,8 +351,3 @@ fromString amPm =
 
         PM ->
             "PM"
-
-
-const : a -> (b -> a)
-const result =
-    \_ -> result
